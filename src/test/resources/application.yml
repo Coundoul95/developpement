@@ -1,0 +1,79 @@
+
+server:
+  port: 9099
+spring:
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        opaque:
+          introspection-uri: https://keycloackdev.afrilins.net/auth/realms/secuGlobal/protocol/openid-connect/token/introspect
+          introspection-client-id: gestionimmeublerapport
+          introspection-client-secret: b66f47fa-66c6-46b4-b968-334300fef20a
+
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  #testWhileIdle: true # Keep the connection alive if idle for a long time (needed in production)
+  # JPA / HIBERNATE
+  datasource:
+    url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;
+    password: test
+    username: test
+    hikari:
+      minimumIdle: 2
+      maximumPoolSize: 10
+      idleTimeout: 120000
+      connectionTimeout: 300000
+      leakDetectionThreshold: 300000
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        dialect: org.hibernate.dialect.H2Dialect
+        ddl-auto: create
+        default_schema: APROSTOCKIMMO
+        connection:
+          url: jdbc:h2:mem:APROSTOCKIMMO;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS APROSTOCKIMMO;
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    healthcheck:
+      enabled: true
+    lease:
+      duration: 90
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: '*'
+keycloak:
+  realm: secuGlobal
+  auth-server-url: https://keycloackdev.afrilins.net/auth/
+  ssl-required: external
+  resource: gestionimmeublerapport
+  bearer-only: true
+  #  verify-token-audience: true
+  credentials:
+    secret: b66f47fa-66c6-46b4-b968-334300fef20a
+
+  policy-enforcer-config:
+    http-method-as-scope: true
+
+info:
+  description: test
+  version: test
