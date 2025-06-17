@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-@EntityScan(basePackages = "sn.afrilins.net.gestionImmeubleRapport.domain;")
+@EntityScan(basePackages = "sn.afrilins.net.gestionEnquete.domain;")
 @EnableJpaRepositories(basePackages = "sn.afrilins.net.gestionEnquete.repository",
         entityManagerFactoryRef = "entityManagerFactory",
         transactionManagerRef = "firstTransactionManager")
@@ -75,7 +75,7 @@ public class PrimaryDataSourceConfig {
         LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(primaryDataSourceConfig.primaryDataSource());
-        em.setPackagesToScan(new String[]{"sn.afrilins.net.gestionImmeubleRapport.domain"});
+        em.setPackagesToScan(new String[]{"sn.afrilins.net.gestionEnquete.domain"});
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         em.setJpaPropertyMap(properties);
         return em;

@@ -4,10 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-//import sn.afrilins.net.gestionImmeubleRapport.domain.parametrage.TypeBudget;
-//import sn.afrilins.net.approStockImmo.repository.parametrage.TypeBudgetRepository;
-//import sn.afrilins.net.approStockImmo.repository.parametrage.UrgenceRepository;
-////import sn.afrilins.net.approStockImmo.repository.parametrage.ArticleDeBaseRepository;
 
 @Component
 @RequiredArgsConstructor

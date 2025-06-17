@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-@EntityScan(basePackages = "sn.afrilins.net.gestionImmeubleRapport.remote.parametrage.domain")
+@EntityScan(basePackages = "sn.afrilins.net.gestionEnquete.remote.parametrage.domain")
 @EnableJpaRepositories(basePackages = "sn.afrilins.net.gestionEnquete.remote.parametrage.repository",
         entityManagerFactoryRef = "entityManagerFactory3",
         transactionManagerRef = "firstTransactionManager3")
