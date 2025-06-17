@@ -26,8 +26,8 @@ public class TypeLocal extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PARAMETRAGE_TYPE_LOCAL")
-    @SequenceGenerator(name = "SEQ_PARAMETRAGE_TYPE_LOCAL", sequenceName = "SEQ_PARAMETRAGE_TYPE_LOCAL", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GE_PARAMETRAGE_TYPE_LOCAL")
+    @SequenceGenerator(name = "SEQ_GE_PARAMETRAGE_TYPE_LOCAL", sequenceName = "SEQ_GE_PARAMETRAGE_TYPE_LOCAL", allocationSize = 1)
     Long id;
 
     @Column(name = "code")

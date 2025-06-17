@@ -1,4 +1,4 @@
-package sn.afrilins.net.gestionImmeubleRapport.services.interfaces.utilisateur;
+package sn.afrilins.net.gestionEnquete.services.interfaces.utilisateur;
 
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 
