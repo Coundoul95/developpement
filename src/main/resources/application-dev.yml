@@ -16,7 +16,7 @@ spring:
         opaque:
           introspection-uri: http://localhost:9080/auth/realms/secuGlobal/protocol/openid-connect/token/introspect
           introspection-client-id: gestionenquete
-          introspection-client-secret: 6f7f977f-a7df-47b8-86ec-d357c6b0fe35
+          introspection-client-secret: 9d46453c-33bd-4466-bd70-4904a1b6a2db
 
   #testWhileIdle: true # Keep the connection alive if idle for a long time (needed in production)
   # JPA / HIBERNATE
@@ -61,6 +61,7 @@ management:
       exposure:
         include:  '*'
 keycloak:
+#  enabled: false
   realm: secuGlobal
   auth-server-url: http://localhost:9080/auth/
   ssl-required: external
@@ -68,7 +69,7 @@ keycloak:
   bearer-only: true
   #  verify-token-audience: true
   credentials:
-    secret: 6f7f977f-a7df-47b8-86ec-d357c6b0fe35
+    secret: 9d46453c-33bd-4466-bd70-4904a1b6a2db
       # policy-enforcer-config:
       #  paths:
       #   - enforcementMode: DISABLED
@@ -89,8 +90,6 @@ config-db:
   urldb: jdbc:oracle:thin:@//localhost:1521/xe
   password_asi: gestionenquete
   username_asi: gestionenquete
-  username_param: parametrageglobal
-  password_param: parametrageglobal
   driver: oracle.jdbc.driver.OracleDriver
 info:
   description: gestionenquete

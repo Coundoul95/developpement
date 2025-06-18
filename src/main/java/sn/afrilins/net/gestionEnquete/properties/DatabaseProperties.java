@@ -20,6 +20,8 @@ public class DatabaseProperties {
 
     String username_asi;
 
+    String driver;
+
     String username_param;
 
     String password_param;
@@ -28,7 +30,7 @@ public class DatabaseProperties {
 
     String username_tracer;
 
-    String driver;
+
 
 
 

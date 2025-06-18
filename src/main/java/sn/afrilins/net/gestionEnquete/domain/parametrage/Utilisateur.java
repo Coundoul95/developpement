@@ -1,9 +1,12 @@
 package sn.afrilins.net.gestionEnquete.domain.parametrage;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,5 +26,10 @@ public class Utilisateur {
 
     @Column(name = "username", unique = true)
     String username;
+
+//    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnoreProperties("utilisateur")
+//    List<Notification> notifications = new ArrayList<>();
+
 }
 

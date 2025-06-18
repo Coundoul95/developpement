@@ -37,8 +37,8 @@ public class ParametrageDataSourceConfig {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(properties.getDriver());
         dataSource.setUrl(properties.getUrldb());
-        dataSource.setUsername(properties.getUsername_param());
-        dataSource.setPassword(properties.getPassword_param());
+        dataSource.setUsername(properties.getUsername_asi());
+        dataSource.setPassword(properties.getPassword_asi());
         return dataSource;
     }
 
@@ -54,7 +54,7 @@ public class ParametrageDataSourceConfig {
         properties.put(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy");
         properties.put(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy");
         em.setDataSource(thirdDataSourceConfig.thirdDataSource());
-        em.setPackagesToScan("sn.afrilins.net.gestionImmeubleRapport.remote.parametrage.domain");
+        em.setPackagesToScan("sn.afrilins.net.gestionEnquete.remote.parametrage.domain");
         properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.Oracle10gDialect");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         em.setJpaPropertyMap(properties);

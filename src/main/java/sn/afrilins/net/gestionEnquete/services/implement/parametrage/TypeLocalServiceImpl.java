@@ -34,6 +34,11 @@ public class TypeLocalServiceImpl implements TypeLocalService {
 
     @Override
     public TypeLocalDTO createTypeLocal(TypeLocalDTO typeLocal) {
+
+        if (typeLocal.getCode().isEmpty()){
+            throw new CustomBadRequestException(new BadRequestAlertException("type_local_code_empty", "type_local_code_empty", "type_local_code_empty"));
+        }
+
         var tyepeLocalgetCode = typeLocalRepository.findFirstByCode(typeLocal.getCode());
 
         if (tyepeLocalgetCode.isPresent()){
