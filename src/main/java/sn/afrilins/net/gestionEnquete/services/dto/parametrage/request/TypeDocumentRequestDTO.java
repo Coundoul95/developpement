@@ -1,4 +1,4 @@
-package sn.afrilins.net.gestionEnquete.services.dto.parametrage;
+package sn.afrilins.net.gestionEnquete.services.dto.parametrage.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;

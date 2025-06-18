@@ -10,13 +10,13 @@ spring:
   #      auto-offset-reset: earliest
   #      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   #      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-  security:
-    oauth2:
-      resourceserver:
-        opaque:
-          introspection-uri: http://localhost:9080/auth/realms/secuGlobal/protocol/openid-connect/token/introspect
-          introspection-client-id: gestionenquete
-          introspection-client-secret: 9d46453c-33bd-4466-bd70-4904a1b6a2db
+#  security:
+#    oauth2:
+#      resourceserver:
+#        opaque:
+#          introspection-uri: http://localhost:9080/auth/realms/secuGlobal/protocol/openid-connect/token/introspect
+#          introspection-client-id: gestionenquete
+#          introspection-client-secret: 9d46453c-33bd-4466-bd70-4904a1b6a2db
 
   #testWhileIdle: true # Keep the connection alive if idle for a long time (needed in production)
   # JPA / HIBERNATE
@@ -60,16 +60,16 @@ management:
     web:
       exposure:
         include:  '*'
-keycloak:
+#keycloak:
 #  enabled: false
-  realm: secuGlobal
-  auth-server-url: http://localhost:9080/auth/
-  ssl-required: external
-  resource: gestionenquete
-  bearer-only: true
-  #  verify-token-audience: true
-  credentials:
-    secret: 9d46453c-33bd-4466-bd70-4904a1b6a2db
+#  realm: secuGlobal
+#  auth-server-url: http://localhost:9080/auth/
+#  ssl-required: external
+#  resource: gestionenquete
+#  bearer-only: true
+#  #  verify-token-audience: true
+#  credentials:
+#    secret: 9d46453c-33bd-4466-bd70-4904a1b6a2db
       # policy-enforcer-config:
       #  paths:
       #   - enforcementMode: DISABLED

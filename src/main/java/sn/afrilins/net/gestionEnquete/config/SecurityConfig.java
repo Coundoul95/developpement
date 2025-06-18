@@ -81,10 +81,12 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/swagger-ui/**").permitAll().and()
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .opaqueToken(token -> token.introspectionUri(this.introspectionUri)
-                                .introspectionClientCredentials(this.clientId, this.clientSecret)).and());
+//                .antMatchers("/swagger-ui/**").permitAll().and()
+                .anyRequest().permitAll();
+//                .and()
+//                .oauth2ResourceServer(oauth2 -> oauth2
+//                        .opaqueToken(token -> token.introspectionUri(this.introspectionUri)
+//                                .introspectionClientCredentials(this.clientId, this.clientSecret)).and());
 
     }
 

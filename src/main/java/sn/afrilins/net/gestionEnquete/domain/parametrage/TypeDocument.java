@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EntityListeners({AuditingEntityListener.class})
+//@EntityListeners({AuditingEntityListener.class})
 @Table(name = "PARAMETRAGE_TYPE_DOCUMENT")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TypeDocument {
