@@ -26,6 +26,7 @@ spring:
     show-sql: true #Show or not log for each sql query
     hibernate:
       ddl-auto: create  #schema  will be automatically created afresh for every start of application Hibernate ddl auto (create, create-drop, update): with "create-drop" the database
+
     #Naming strategy
     naming:
       implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
@@ -98,3 +99,5 @@ info:
 feign:
   circuitbreaker:
     enabled: false
+
+

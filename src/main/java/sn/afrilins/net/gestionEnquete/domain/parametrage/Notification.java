@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.domain.parametrage;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,9 +9,12 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,10 +24,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EntityListeners({AuditingEntityListener.class})
+//@EntityListeners({AuditingEntityListener.class})
 @Table(name = "PARAMETRAGE_NOTIFICATION")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Notification {
+public class Notification  {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -31,15 +35,10 @@ public class Notification {
     @SequenceGenerator(name = "SEQ_GE_PARAMETRAGE_NOTIFICATION", sequenceName = "SEQ_GE_PARAMETRAGE_NOTIFICATION", allocationSize = 1)
     Long id;
 
-    @Column(name = "message", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "message", nullable = false, columnDefinition = "CLOB")
     String message;
 
-    @Column(name = "date_envoi", nullable = false)
-    @CreationTimestamp
-    LocalDateTime dateEnvoi;
-
-    @Column(name = "date_lu", nullable = false)
-    @CreationTimestamp
+    @Column(name = "date_lu")
     LocalDateTime dateLu;
 
     @Column(name = "lu", nullable = false)
@@ -61,6 +60,4 @@ public class Notification {
     @JoinColumn(name = "utilisateur_id", nullable = false)
     @JsonIgnoreProperties({"notifications"})
     Utilisateur utilisateur;
-
-
 }

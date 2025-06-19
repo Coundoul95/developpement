@@ -8,9 +8,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Notification;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
+import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
+import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
+import sn.afrilins.net.gestionEnquete.repository.UtilisateurRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.NotificationRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationUpdateDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.NotificationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.NotificationService;
+import sn.afrilins.net.gestionEnquete.services.mapper.parametrage.NotificationMapper;
+import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
+
+import java.time.LocalDateTime;
+
 
 @AllArgsConstructor
 @Slf4j
@@ -19,24 +31,66 @@ import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.Notificati
 @Transactional
 public class NotificationServiceImpl implements NotificationService {
 
+    final NotificationRepository notificationRepository;
+
+    final UtilisateurRepository utilisateurRepository;
+
+    final NotificationMapper notificationMapper;
+
 
 
     /**
-     * @param notification
-     * @return
+     * Crée une notification après avoir vérifié les données entrantes.
+     *
+     * @param notification les données de la notification à créer
+     * @return la notification créée sous forme de DTO
      */
     @Override
     public NotificationDTO createNotification(NotificationRequestDTO notification) {
-        return null;
+
+        ValidationUtils.requireNonNull(notification.getUtilisateurId(), "utilisateur_id", "notification");
+        ValidationUtils.requireNonBlank(notification.getMessage(), "message", "notification");
+        ValidationUtils.requireNonBlank(notification.getTypeNotification(), "type_notification", "notification");
+
+        Utilisateur utilisateur = utilisateurRepository.findById(notification.getUtilisateurId())
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("utilisateur_existe_pas", "utilisateur", "utilisateur_existe_pas"))
+                );
+
+        Notification entity = Notification.builder()
+                .message(notification.getMessage())
+                .typeNotification(notification.getTypeNotification())
+                .utilisateur(utilisateur)
+                .dateLu(null)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        entity = notificationRepository.save(entity);
+        System.out.println(entity.getUtilisateur().getId());
+        return notificationMapper.toDto(entity);
     }
+
 
     /**
      * @param notification
      * @return
      */
     @Override
-    public NotificationDTO updateNotification(NotificationDTO notification) {
-        return null;
+    public NotificationDTO updateNotification(Long id, NotificationUpdateDTO notification) {
+        ValidationUtils.requireNonNull(id.toString(), "notification_id", "notification");
+
+        Notification entity = notificationRepository.findById(id)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("notification_introuvable", "notification", "id_not_found")));
+
+        if(notification.getMessage().isPresent()) {
+            entity.setMessage(String.valueOf(notification.getMessage()));
+        }
+        if(notification.getTypeNotification().isPresent()){
+            entity.setTypeNotification(String.valueOf(notification.getTypeNotification()));
+        }
+
+        return notificationMapper.toDto(notificationRepository.save(entity));
     }
 
     /**
@@ -44,7 +98,10 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void deleteNotification(Long id) {
-
+        Notification entity = notificationRepository.findById(id)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("notification_introuvable", "notification", "id_not_found")));
+        notificationRepository.delete(entity);
     }
 
     /**
@@ -53,7 +110,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public NotificationDTO findNotificationById(Long id) {
-        return null;
+         return notificationMapper.toDto(findById(id));
     }
 
     /**
@@ -62,8 +119,12 @@ public class NotificationServiceImpl implements NotificationService {
      * @return
      */
     @Override
-    public Page<NotificationDTO> readAllNotification(Pageable pageable, Long utilisateurId) {
-        return null;
+    public Page<NotificationDTO> readAllNotification(Long utilisateurId, String typeNotification, Pageable pageable) {
+        if(utilisateurId != null){
+            ValidationUtils.requirePositiveId(utilisateurId, "utilisateur_id", "notification");
+        }
+        return notificationRepository.findAllNotification(utilisateurId,typeNotification, pageable)
+                .map(notificationMapper::toDto);
     }
 
     /**
@@ -72,6 +133,46 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public NotificationDTO markAsReadNotification(Long id) {
-        return null;
+        Notification existingNotification = findById(id);
+        if(existingNotification.getLu()){
+            throw  new CustomBadRequestException(new BadRequestAlertException("notification_est_lu", "notification", "notification_est_lu"));
+        }
+        existingNotification.setDateLu(LocalDateTime.now());
+        existingNotification.setLu(true);
+        notificationRepository.save(existingNotification);
+        return notificationMapper.toDto(existingNotification);
+    }
+
+    /**
+     * @param utilisateurId l'identifiant de l'utilisateur
+     * @return
+     */
+    @Override
+    public Page<NotificationDTO> findAllNonLuesByUtilisateurId(Long utilisateurId, String typeNotification, Pageable pageable) {
+        if(utilisateurId != null){
+            ValidationUtils.requirePositiveId(utilisateurId, "utilisateur_id", "notification");
+        }
+        return notificationRepository.findAllNonLuesByUtilisateurId(utilisateurId, typeNotification, pageable)
+                .map(notificationMapper::toDto);
+    }
+
+    /**
+     * @param utilisateurId l'identifiant de l'utilisateur
+     * @return
+     */
+    @Override
+    public Page<NotificationDTO> findAllLuesByUtilisateurId(Long utilisateurId, String typeNotification, Pageable pageable) {
+        if(utilisateurId != null){
+            ValidationUtils.requirePositiveId(utilisateurId, "utilisateur_id", "notification");
+        }
+        return notificationRepository.findAllLuesByUtilisateurId(utilisateurId, typeNotification, pageable)
+                .map(notificationMapper::toDto);
+    }
+
+
+    private Notification findById(Long id){
+        return notificationRepository.findById(id)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("notification_introuvable", "notification", "id_not_found")));
     }
 }

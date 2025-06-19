@@ -3,6 +3,7 @@ package sn.afrilins.net.gestionEnquete;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @EnableFeignClients
 @ConfigurationPropertiesScan(basePackages = "sn.afrilins.net.gestionEnquete.properties")
 @SpringBootApplication
+@EntityScan("sn.afrilins.net.gestionEnquete.domain")
 public class GestionEnqueteApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GestionEnqueteApplication.class, args);
@@ -28,7 +30,7 @@ public class GestionEnqueteApplication {
 //	@Bean
 //	CommandLineRunner start(UtilisateurRepository repository) {
 //		return args -> {
-//			final String name = "Elage Ciss";
+//			final String name = "Fatou Badara Sall";
 //			Optional<Utilisateur> existingUser = repository.findByUsername(name);
 //
 //			if (existingUser.isEmpty()) {

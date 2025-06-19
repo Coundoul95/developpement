@@ -16,6 +16,6 @@ public interface TypeDocumentService {
 
     TypeDocumentDTO findTypeDocumentById(Long id);
 
-    Page<TypeDocumentDTO> readAllTypeDocument(Pageable pageable, String code, String libelle);
+    Page<TypeDocumentDTO> readAllTypeDocument(Pageable pageable);
 
 }

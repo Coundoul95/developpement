@@ -58,17 +58,14 @@ public class TypeDocumentRessource {
         return typeDocumentService.updateTypeDocument(typeDocument);
     }
 
-    @Operation(summary = "Liste des type Local", description = "Permet de lister les type Locale")
+    @Operation(summary = "Liste des type Local", description = "Permet de lister les types de document")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "500", description = "Internal server error during request processing")})
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public Page<TypeDocumentDTO> readTypeDocument(Pageable pageable
-            , @Parameter(description = "le code du TypeDocument") @RequestParam(value = "code", required = false) String code
-            , @Parameter(description = "le libelle du TypeDocument") @RequestParam(value = "libelle", required = false) String libelle
-    ) {
-        return typeDocumentService.readAllTypeDocument(pageable, code, libelle);
+    public Page<TypeDocumentDTO> readTypeDocument(Pageable pageable) {
+        return typeDocumentService.readAllTypeDocument(pageable);
     }
 
     @ApiResponses(value = {

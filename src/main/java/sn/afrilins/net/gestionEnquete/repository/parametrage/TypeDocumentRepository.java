@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.QTypeDocument;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
 
 import java.util.Optional;
@@ -17,7 +18,7 @@ public interface TypeDocumentRepository extends JpaRepository<TypeDocument,Long>
     Optional<TypeDocument> findFirstByLibelle(String libelle);
 
 
-    default Page<TypeDocument> findAllTypeDocument(Pageable pageable, String code, String libelle) {
+    default Page<TypeDocument> findAllTypeDocument(Pageable pageable) {
         var booleanBuilder = new BooleanBuilder();
         return findAll(booleanBuilder, pageable);
     }

@@ -83,4 +83,9 @@ Thumbs.db
 *.mov
 *.wmv
 
+start-servers.sh
+stop-servers.sh
+
+inf/
+
 >>>>>>> 883550b (Initial commit)

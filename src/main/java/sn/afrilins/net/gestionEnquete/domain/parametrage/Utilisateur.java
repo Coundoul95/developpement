@@ -27,9 +27,9 @@ public class Utilisateur {
     @Column(name = "username", unique = true)
     String username;
 
-//    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnoreProperties("utilisateur")
-//    List<Notification> notifications = new ArrayList<>();
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("utilisateur")
+    List<Notification> notifications = new ArrayList<>();
 
 }
 
