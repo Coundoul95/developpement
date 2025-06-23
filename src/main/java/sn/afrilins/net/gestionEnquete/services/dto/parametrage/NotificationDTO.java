@@ -27,6 +27,9 @@ public class NotificationDTO {
     @Schema(description = "Statut de lecture de la notification")
     Boolean lu;
 
+    @Schema(description = "Statut indiquant si la notification est urgente")
+    Boolean urgent;
+
     @Schema(description = "Date d'envoi de la notification")
     LocalDateTime dateEnvoi;
 

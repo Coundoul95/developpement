@@ -15,6 +15,7 @@ import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.NotificationRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationStatsDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationUpdateDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.NotificationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.NotificationService;
@@ -22,7 +23,8 @@ import sn.afrilins.net.gestionEnquete.services.mapper.parametrage.NotificationMa
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Slf4j
@@ -36,8 +38,6 @@ public class NotificationServiceImpl implements NotificationService {
     final UtilisateurRepository utilisateurRepository;
 
     final NotificationMapper notificationMapper;
-
-
 
     /**
      * Crée une notification après avoir vérifié les données entrantes.
@@ -54,13 +54,14 @@ public class NotificationServiceImpl implements NotificationService {
 
         Utilisateur utilisateur = utilisateurRepository.findById(notification.getUtilisateurId())
                 .orElseThrow(() -> new CustomBadRequestException(
-                        new BadRequestAlertException("utilisateur_existe_pas", "utilisateur", "utilisateur_existe_pas"))
-                );
+                        new BadRequestAlertException("utilisateur_existe_pas", "utilisateur",
+                                "utilisateur_existe_pas")));
 
         Notification entity = Notification.builder()
                 .message(notification.getMessage())
                 .typeNotification(notification.getTypeNotification())
                 .utilisateur(utilisateur)
+                .urgent(notification.getUrgent() || false)
                 .dateLu(null)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -69,7 +70,6 @@ public class NotificationServiceImpl implements NotificationService {
         System.out.println(entity.getUtilisateur().getId());
         return notificationMapper.toDto(entity);
     }
-
 
     /**
      * @param notification
@@ -83,10 +83,10 @@ public class NotificationServiceImpl implements NotificationService {
                 .orElseThrow(() -> new CustomBadRequestException(
                         new BadRequestAlertException("notification_introuvable", "notification", "id_not_found")));
 
-        if(notification.getMessage().isPresent()) {
+        if (notification.getMessage().isPresent()) {
             entity.setMessage(String.valueOf(notification.getMessage()));
         }
-        if(notification.getTypeNotification().isPresent()){
+        if (notification.getTypeNotification().isPresent()) {
             entity.setTypeNotification(String.valueOf(notification.getTypeNotification()));
         }
 
@@ -110,7 +110,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public NotificationDTO findNotificationById(Long id) {
-         return notificationMapper.toDto(findById(id));
+        return notificationMapper.toDto(findById(id));
     }
 
     /**
@@ -120,10 +120,10 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public Page<NotificationDTO> readAllNotification(Long utilisateurId, String typeNotification, Pageable pageable) {
-        if(utilisateurId != null){
+        if (utilisateurId != null) {
             ValidationUtils.requirePositiveId(utilisateurId, "utilisateur_id", "notification");
         }
-        return notificationRepository.findAllNotification(utilisateurId,typeNotification, pageable)
+        return notificationRepository.findAllNotification(utilisateurId, typeNotification, pageable)
                 .map(notificationMapper::toDto);
     }
 
@@ -134,8 +134,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO markAsReadNotification(Long id) {
         Notification existingNotification = findById(id);
-        if(existingNotification.getLu()){
-            throw  new CustomBadRequestException(new BadRequestAlertException("notification_est_lu", "notification", "notification_est_lu"));
+        if (existingNotification.getLu()) {
+            throw new CustomBadRequestException(
+                    new BadRequestAlertException("notification_est_lu", "notification", "notification_est_lu"));
         }
         existingNotification.setDateLu(LocalDateTime.now());
         existingNotification.setLu(true);
@@ -143,13 +144,30 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationMapper.toDto(existingNotification);
     }
 
+    @Override
+    public List<NotificationDTO> markManyAsReadNotification(List<Long> ids) {
+        List<Notification> notifications = notificationRepository.findAllById(ids);
+
+        for (Notification notification : notifications) {
+            notification.setLu(true);
+            notification.setDateLu(LocalDateTime.now());
+        }
+
+        List<Notification> updatedNotifications = notificationRepository.saveAll(notifications);
+
+        return updatedNotifications.stream()
+                .map(this.notificationMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     /**
      * @param utilisateurId l'identifiant de l'utilisateur
      * @return
      */
     @Override
-    public Page<NotificationDTO> findAllNonLuesByUtilisateurId(Long utilisateurId, String typeNotification, Pageable pageable) {
-        if(utilisateurId != null){
+    public Page<NotificationDTO> findAllNonLuesByUtilisateurId(Long utilisateurId, String typeNotification,
+            Pageable pageable) {
+        if (utilisateurId != null) {
             ValidationUtils.requirePositiveId(utilisateurId, "utilisateur_id", "notification");
         }
         return notificationRepository.findAllNonLuesByUtilisateurId(utilisateurId, typeNotification, pageable)
@@ -161,16 +179,56 @@ public class NotificationServiceImpl implements NotificationService {
      * @return
      */
     @Override
-    public Page<NotificationDTO> findAllLuesByUtilisateurId(Long utilisateurId, String typeNotification, Pageable pageable) {
-        if(utilisateurId != null){
+    public Page<NotificationDTO> findAllLuesByUtilisateurId(Long utilisateurId, String typeNotification,
+            Pageable pageable) {
+        if (utilisateurId != null) {
             ValidationUtils.requirePositiveId(utilisateurId, "utilisateur_id", "notification");
         }
         return notificationRepository.findAllLuesByUtilisateurId(utilisateurId, typeNotification, pageable)
                 .map(notificationMapper::toDto);
     }
 
+    /**
+     * @param utilisateurId    l'identifiant de l'utilisateur
+     * @param typeNotification le type de notification à filtrer
+     * @param pageable         les informations de pagination
+     * @return
+     */
+    @Override
+    public Page<NotificationDTO> findAllUrgentByUtilisateurId(Long utilisateurId, String typeNotification, Pageable pageable) {
+        return notificationRepository.findAllUrgentByUtilisateurId(utilisateurId, typeNotification, pageable).map(notificationMapper::toDto);
+    }
 
-    private Notification findById(Long id){
+    /**
+     * @param ids
+     */
+    @Override
+    public void deleteManyNotification(List<Long> ids) {
+        for (Long id : ids) {
+            notificationRepository.deleteById(id);
+        }
+    }
+
+    /**
+     * @param utilisateurId l'identifiant de l'utilisateur concerné
+     * @return
+     */
+    @Override
+    public NotificationStatsDTO getNotificationStats(Long utilisateurId) {
+        long total = notificationRepository.countByUtilisateurId(utilisateurId);
+        long unread = notificationRepository.countByUtilisateurIdAndLuFalse(utilisateurId);
+        long read = notificationRepository.countByUtilisateurIdAndLuTrue(utilisateurId);
+        long urgent = notificationRepository.countByUtilisateurIdAndUrgentTrue(utilisateurId);
+
+        return NotificationStatsDTO.builder()
+                .read(read)
+                .unread(unread)
+                .urgent(urgent)
+                .total(total)
+                .build();
+    }
+
+    private Notification findById(Long id) {
         return notificationRepository.findById(id)
                 .orElseThrow(() -> new CustomBadRequestException(
                         new BadRequestAlertException("notification_introuvable", "notification", "id_not_found")));

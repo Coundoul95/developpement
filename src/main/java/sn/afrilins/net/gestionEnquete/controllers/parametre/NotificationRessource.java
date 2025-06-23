@@ -12,11 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationStatsDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationUpdateDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.NotificationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.NotificationService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/notification")
@@ -69,6 +71,25 @@ public class NotificationRessource {
         notificationService.deleteNotification(id);
     }
 
+    @Operation(
+            summary = "Suppression de plusieurs notifications",
+            description = "Supprime une liste de notifications en fournissant leurs identifiants"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Notifications supprimées avec succès"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "404", description = "Une ou plusieurs notifications introuvables"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur interne")
+    })
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteManyNotifications(
+            @Parameter(description = "Liste des identifiants des notifications à supprimer", required = true)
+            @RequestBody List<Long> ids
+    ) {
+        notificationService.deleteManyNotification(ids);
+    }
+
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "l'expression de besoin est bien trouve"),
@@ -109,6 +130,20 @@ public class NotificationRessource {
         return notificationService.markAsReadNotification(id);
     }
 
+    @Operation(summary = "Marquer plusieurs notifications comme lues", description = "Permet de marquer plusieurs notifications comme lues")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Succès"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne lors du traitement de la requête")
+    })
+    @PostMapping("/mark/read/many")
+    @ResponseStatus(HttpStatus.OK)
+    public List<NotificationDTO> markManyAsReadNotification(
+            @Parameter(description = "Liste des identifiants de notifications", required = true, example = "[1, 2, 3]")
+            @RequestBody List<Long> ids) {
+        return notificationService.markManyAsReadNotification(ids);
+    }
+
+
     @Operation(summary = "Liste des notifications non lus", description = "Permet de lister les notifications non lus")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -134,5 +169,32 @@ public class NotificationRessource {
              Pageable pageable) {
         return  notificationService.findAllLuesByUtilisateurId(utilisateurId,typeNotification, pageable);
     }
+
+    @Operation(summary = "Liste des notifications lus", description = "Permet de lister les notifications lus")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "500", description = "Internal server error during request processing")})
+    @GetMapping("all/urgent")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<NotificationDTO> findAllUrgentByUtilisateurId(
+            @Parameter(description = "l'identifiant de l'utilisateur") @RequestParam(value = "utilisateurId", required = false) Long utilisateurId,
+            @Parameter(description = "le type de notification") @RequestParam(value = "typeNotification", required = false) String typeNotification,
+            Pageable pageable) {
+        return  notificationService.findAllUrgentByUtilisateurId(utilisateurId,typeNotification, pageable);
+    }
+
+    @Operation(summary = "Recupérer les statistiques des notifications d'un utilisateur", description = "Permet de récupérer les statistiques des notifications d'un utilisateur")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Succès"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne lors du traitement de la requête")
+    })
+    @GetMapping("/stats/{id}")
+    public NotificationStatsDTO getStats(
+            @Parameter(description = "Identifiant notification", name = "id", required = true, example = "1")
+            @PathVariable(value = "id") Long id
+    ) {
+        return notificationService.getNotificationStats(id);
+    }
+
 
 }

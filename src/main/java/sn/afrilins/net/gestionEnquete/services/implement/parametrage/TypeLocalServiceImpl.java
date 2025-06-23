@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
@@ -16,7 +15,6 @@ import sn.afrilins.net.gestionEnquete.services.dto.parametrage.TypeLocalDTO;
 import sn.afrilins.net.gestionEnquete.services.mapper.parametrage.TypeLocalMapper;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeLocalService;
 
-import java.text.MessageFormat;
 
 @AllArgsConstructor
 @Slf4j

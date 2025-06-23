@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import sn.afrilins.net.gestionEnquete.domain.parametrage.QTypeDocument;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
 
 import java.util.Optional;

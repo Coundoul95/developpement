@@ -16,13 +16,16 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationRequestDTO {
 
-    @Schema(description = "Le message de la notification")
+    @Schema(description = "Le message de la notification", defaultValue = "Nouveau message")
     String message;
 
-    @Schema(description = "Type de la notification")
+    @Schema(description = "Type de la notification", defaultValue = "systeme")
     String typeNotification;
 
-    @Schema(description = "Identifiant de l'utilisateur destinataire")
+    @Schema(description = "Statut indiquant si la notification est urgente", defaultValue = "false")
+    Boolean urgent;
+
+    @Schema(description = "Identifiant de l'utilisateur destinataire", defaultValue = "1")
     Long utilisateurId;
 
 }
