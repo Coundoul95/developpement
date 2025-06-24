@@ -28,6 +28,7 @@ public class EtatDemandeServiceImpl implements EtatDemandeService {
     private  final EtatDemandeRepository etatDemandeRepository;
 
     private final EtatDemandeMapper etatDemandeMapper;
+
     private final String ENTITY = "etat_demande";
 
 
