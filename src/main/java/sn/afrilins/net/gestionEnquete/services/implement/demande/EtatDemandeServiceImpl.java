@@ -32,6 +32,9 @@ public class EtatDemandeServiceImpl implements EtatDemandeService {
     private final String ENTITY = "etat_demande";
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EtatDemandeDTO createEtatDemande(EtatDemandeRequestDTO etatDemande) {
         ValidationUtils.requireNonBlank(etatDemande.getCode(), "code", ENTITY);
@@ -61,6 +64,10 @@ public class EtatDemandeServiceImpl implements EtatDemandeService {
         return etatDemandeMapper.toDto(etatDemandeRepository.save(entity));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EtatDemandeDTO updateEtatDemande(EtatDemandeDTO etatDemande) {
         ValidationUtils.requirePositiveId(etatDemande.getId(), "id", ENTITY);
@@ -96,6 +103,10 @@ public class EtatDemandeServiceImpl implements EtatDemandeService {
         return etatDemandeMapper.toDto(etatDemandeRepository.save(existing));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteEtatDemande(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
@@ -107,6 +118,10 @@ public class EtatDemandeServiceImpl implements EtatDemandeService {
         etatDemandeRepository.delete(existing);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EtatDemandeDTO findEtatDemandeById(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
@@ -117,6 +132,10 @@ public class EtatDemandeServiceImpl implements EtatDemandeService {
                         new BadRequestAlertException("etat_demande_introuvable", ENTITY, "id_inexistant")));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<EtatDemandeDTO> readAllEtatDemandes(Pageable pageable) {
         return etatDemandeRepository.findAllEtatDemande(pageable)

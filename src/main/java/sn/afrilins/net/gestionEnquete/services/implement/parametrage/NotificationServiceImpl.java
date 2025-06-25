@@ -39,12 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     final NotificationMapper notificationMapper;
 
-    /**
-     * Crée une notification après avoir vérifié les données entrantes.
-     *
-     * @param notification les données de la notification à créer
-     * @return la notification créée sous forme de DTO
-     */
+
     @Override
     public NotificationDTO createNotification(NotificationRequestDTO notification) {
 
@@ -71,10 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationMapper.toDto(entity);
     }
 
-    /**
-     * @param notification
-     * @return
-     */
+
     @Override
     public NotificationDTO updateNotification(Long id, NotificationUpdateDTO notification) {
         ValidationUtils.requireNonNull(id.toString(), "notification_id", "notification");
@@ -93,9 +85,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationMapper.toDto(notificationRepository.save(entity));
     }
 
-    /**
-     * @param id
-     */
+
     @Override
     public void deleteNotification(Long id) {
         Notification entity = notificationRepository.findById(id)
@@ -104,20 +94,13 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.delete(entity);
     }
 
-    /**
-     * @param id
-     * @return
-     */
+
     @Override
     public NotificationDTO findNotificationById(Long id) {
         return notificationMapper.toDto(findById(id));
     }
 
-    /**
-     * @param pageable
-     * @param utilisateurId
-     * @return
-     */
+
     @Override
     public Page<NotificationDTO> readAllNotification(Long utilisateurId, String typeNotification, Pageable pageable) {
         if (utilisateurId != null) {
@@ -127,10 +110,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .map(notificationMapper::toDto);
     }
 
-    /**
-     * @param id
-     * @return
-     */
+
     @Override
     public NotificationDTO markAsReadNotification(Long id) {
         Notification existingNotification = findById(id);
@@ -160,10 +140,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * @param utilisateurId l'identifiant de l'utilisateur
-     * @return
-     */
+
     @Override
     public Page<NotificationDTO> findAllNonLuesByUtilisateurId(Long utilisateurId, String typeNotification,
             Pageable pageable) {
@@ -174,10 +151,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .map(notificationMapper::toDto);
     }
 
-    /**
-     * @param utilisateurId l'identifiant de l'utilisateur
-     * @return
-     */
+
     @Override
     public Page<NotificationDTO> findAllLuesByUtilisateurId(Long utilisateurId, String typeNotification,
             Pageable pageable) {
@@ -188,20 +162,13 @@ public class NotificationServiceImpl implements NotificationService {
                 .map(notificationMapper::toDto);
     }
 
-    /**
-     * @param utilisateurId    l'identifiant de l'utilisateur
-     * @param typeNotification le type de notification à filtrer
-     * @param pageable         les informations de pagination
-     * @return
-     */
+
     @Override
     public Page<NotificationDTO> findAllUrgentByUtilisateurId(Long utilisateurId, String typeNotification, Pageable pageable) {
         return notificationRepository.findAllUrgentByUtilisateurId(utilisateurId, typeNotification, pageable).map(notificationMapper::toDto);
     }
 
-    /**
-     * @param ids
-     */
+
     @Override
     public void deleteManyNotification(List<Long> ids) {
         for (Long id : ids) {
@@ -209,10 +176,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    /**
-     * @param utilisateurId l'identifiant de l'utilisateur concerné
-     * @return
-     */
+
     @Override
     public NotificationStatsDTO getNotificationStats(Long utilisateurId) {
         long total = notificationRepository.countByUtilisateurId(utilisateurId);

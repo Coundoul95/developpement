@@ -29,8 +29,11 @@ public class EtatEnqueteServiceImpl implements EtatEnqueteService {
     private  final EtatEnqueteMapper etatEnqueteMapper;
 
     private final String ENTITY = "etat_enquete";
-    
-    
+
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EtatEnqueteDTO createEtatEnquete(EtatEnqueteRequestDTO etatEnquete) {
         ValidationUtils.requireNonBlank(etatEnquete.getCode(), "code", ENTITY);
@@ -60,6 +63,10 @@ public class EtatEnqueteServiceImpl implements EtatEnqueteService {
         return etatEnqueteMapper.toDto(etatEnqueteRepository.save(entity));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EtatEnqueteDTO updateEtatEnquete(EtatEnqueteDTO etatEnquete) {
         ValidationUtils.requirePositiveId(etatEnquete.getId(), "id", ENTITY);
@@ -92,6 +99,10 @@ public class EtatEnqueteServiceImpl implements EtatEnqueteService {
         return etatEnqueteMapper.toDto(etatEnqueteRepository.save(existing));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteEtatEnquete(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
@@ -103,6 +114,10 @@ public class EtatEnqueteServiceImpl implements EtatEnqueteService {
         etatEnqueteRepository.delete(existing);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EtatEnqueteDTO findEtatEnqueteById(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
@@ -114,6 +129,10 @@ public class EtatEnqueteServiceImpl implements EtatEnqueteService {
 
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<EtatEnqueteDTO> readAllEtatEnquetes(Pageable pageable) {
         return etatEnqueteRepository.findAllEtatEnquete(pageable)

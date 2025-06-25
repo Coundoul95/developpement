@@ -1,6 +1,5 @@
 package sn.afrilins.net.gestionEnquete.services.implement.parametrage;
 
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -9,15 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.TypeDocumentRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.TypeDocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.TypeDocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocumentService;
 import sn.afrilins.net.gestionEnquete.services.mapper.parametrage.TypeDocumentMapper;
-
-import java.util.Optional;
+import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
 @AllArgsConstructor
 @Slf4j
@@ -26,96 +24,93 @@ import java.util.Optional;
 @Transactional
 public class TypeDocumentServiceImpl implements TypeDocumentService {
 
-    private final TypeDocumentRepository typeDocumentRepository;
+    final TypeDocumentRepository typeDocumentRepository;
+    final TypeDocumentMapper typeDocumentMapper;
+    final String ENTITY = "type_document";
 
-    private final TypeDocumentMapper typeDocumentMapper;
-
-
-    /**
-     * @param typeDocument
-     * @return
-     */
     @Override
-    public TypeDocumentDTO createTypeDocument(TypeDocumentDTO typeDocument) {
-        var tyepeDocumentGetCode = typeDocumentRepository.findFirstByCode(typeDocument.getCode());
+    public TypeDocumentDTO createTypeDocument(TypeDocumentRequestDTO request) {
+        ValidationUtils.requireNonBlank(request.getCode(), "code", ENTITY);
+        ValidationUtils.requireNonBlank(request.getLibelle(), "libelle", ENTITY);
+        ValidationUtils.requireMinLength(request.getCode(), 2, "code", ENTITY);
+        ValidationUtils.requireMinLength(request.getLibelle(), 2, "libelle", ENTITY);
 
-        if (tyepeDocumentGetCode.isPresent()){
-            throw new CustomBadRequestException(new BadRequestAlertException("type_document_code_existe", "type_document_code_existe", "type_document_code_existe"));
-        }
+        typeDocumentRepository.findFirstByCode(request.getCode()).ifPresent(e -> {
+            throw new CustomBadRequestException(
+                    new BadRequestAlertException("type_document_code_existe", ENTITY, "code_existe"));
+        });
 
-        var tyepeDocumentGetLibelle = typeDocumentRepository.findFirstByLibelle(typeDocument.getLibelle());
+        typeDocumentRepository.findFirstByLibelle(request.getLibelle()).ifPresent(e -> {
+            throw new CustomBadRequestException(
+                    new BadRequestAlertException("type_document_libelle_existe", ENTITY, "libelle_existe"));
+        });
 
-        if (tyepeDocumentGetLibelle.isPresent()){
-            throw new CustomBadRequestException(new BadRequestAlertException("type_document_libelle_existe", "type_document_libelle_existe", "type_document_libelle_existe"));
-        }
+        var entity = typeDocumentMapper.toEntity(
+                TypeDocumentDTO.builder()
+                        .code(request.getCode())
+                        .libelle(request.getLibelle())
+                        .build()
+        );
 
-        return typeDocumentMapper.toDto(typeDocumentRepository.save(typeDocumentMapper.toEntity(typeDocument)));
+        return typeDocumentMapper.toDto(typeDocumentRepository.save(entity));
     }
 
-    /**
-     * @param dto
-     * @return
-     */
     @Override
     public TypeDocumentDTO updateTypeDocument(TypeDocumentDTO dto) {
-        TypeDocument existing = typeDocumentRepository.findById(dto.getId())
+        ValidationUtils.requirePositiveId(dto.getId(), "id", ENTITY);
+        ValidationUtils.requireNonBlank(dto.getCode(), "code", ENTITY);
+        ValidationUtils.requireNonBlank(dto.getLibelle(), "libelle", ENTITY);
+        ValidationUtils.requireMinLength(dto.getCode(), 2, "code", ENTITY);
+        ValidationUtils.requireMinLength(dto.getLibelle(), 2, "libelle", ENTITY);
+
+        var existing = typeDocumentRepository.findById(dto.getId())
                 .orElseThrow(() -> new CustomBadRequestException(
-                        new BadRequestAlertException("type_document_absent", "type_document", "id.notfound")));
+                        new BadRequestAlertException("type_document_introuvable", ENTITY, "id_inexistant")));
 
-        if (dto.getCode() != null && !dto.getCode().isBlank()) {
-            Optional<TypeDocument> tyepeDocumentGetCode = typeDocumentRepository.findFirstByCode(dto.getCode());
-            if (tyepeDocumentGetCode.isPresent() && !tyepeDocumentGetCode.get().getId().equals(existing.getId())) {
-                throw new CustomBadRequestException(
-                        new BadRequestAlertException("type_document_code_existe", "type_document", "code.exists"));
-            }
-            existing.setCode(dto.getCode());
-        }
+        typeDocumentRepository.findFirstByCode(dto.getCode())
+                .filter(e -> !e.getId().equals(dto.getId()))
+                .ifPresent(e -> {
+                    throw new CustomBadRequestException(
+                            new BadRequestAlertException("type_document_code_existe", ENTITY, "code_existe"));
+                });
 
-        if (dto.getLibelle() != null && !dto.getLibelle().isBlank()) {
-            Optional<TypeDocument> tyepeDocumentGetLibelle = typeDocumentRepository.findFirstByLibelle(dto.getLibelle());
-            if (tyepeDocumentGetLibelle.isPresent() && !tyepeDocumentGetLibelle.get().getId().equals(existing.getId())) {
-                throw new CustomBadRequestException(
-                        new BadRequestAlertException("type_document_libelle_existe", "type_document", "libelle.exists"));
-            }
-            existing.setLibelle(dto.getLibelle());
-        }
+        typeDocumentRepository.findFirstByLibelle(dto.getLibelle())
+                .filter(e -> !e.getId().equals(dto.getId()))
+                .ifPresent(e -> {
+                    throw new CustomBadRequestException(
+                            new BadRequestAlertException("type_document_libelle_existe", ENTITY, "libelle_existe"));
+                });
 
-        TypeDocument updated = typeDocumentRepository.save(existing);
-        return typeDocumentMapper.toDto(updated);
+        existing.setCode(dto.getCode());
+        existing.setLibelle(dto.getLibelle());
+
+        return typeDocumentMapper.toDto(typeDocumentRepository.save(existing));
     }
 
-
-    /**
-     * @param id
-     */
     @Override
     public void deleteTypeDocument(Long id) {
-        if (!typeDocumentRepository.existsById(id)) {
-            throw new CustomBadRequestException(new BadRequestAlertException("type_document_absent", "type_document", "id.notfound"));
-        }
-        typeDocumentRepository.deleteById(id);
+        ValidationUtils.requirePositiveId(id, "id", ENTITY);
+
+        var existing = typeDocumentRepository.findById(id)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("type_document_introuvable", ENTITY, "id_inexistant")));
+
+        typeDocumentRepository.delete(existing);
     }
 
-    /**
-     * @param id
-     * @return
-     */
     @Override
     public TypeDocumentDTO findTypeDocumentById(Long id) {
-        var typeDocument = typeDocumentRepository.findById(id).orElseThrow(
-                () -> new CustomBadRequestException(
-                        new BadRequestAlertException("type_document_absent", "type_document", "id.notfound")
-                )
-        );
-        return typeDocumentMapper.toDto(typeDocument);
+        ValidationUtils.requirePositiveId(id, "id", ENTITY);
+
+        return typeDocumentRepository.findById(id)
+                .map(typeDocumentMapper::toDto)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("type_document_introuvable", ENTITY, "id_inexistant")));
     }
 
-    /**
-     * @param pageable
-     * @return
-     */
     @Override
     public Page<TypeDocumentDTO> readAllTypeDocument(Pageable pageable) {
-        return typeDocumentRepository.findAllTypeDocument(pageable).map(typeDocumentMapper::toDto);
+        return typeDocumentRepository.findAllTypeDocument(pageable)
+                .map(typeDocumentMapper::toDto);
     }
 }

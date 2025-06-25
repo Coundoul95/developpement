@@ -30,6 +30,10 @@ public class TypeSourceServiceImpl implements TypeSourceService {
 
     private final String ENTITY = "type_source";
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeSourceDTO createTypeSource(TypeSourceRequestDTO typeSource) {
         ValidationUtils.requireNonBlank(typeSource.getCode(), "code", ENTITY);
@@ -59,6 +63,10 @@ public class TypeSourceServiceImpl implements TypeSourceService {
         return typeSourceMapper.toDto(typeSourceRepository.save(entity));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeSourceDTO updateTypeSource(TypeSourceDTO typeSource) {
         ValidationUtils.requirePositiveId(typeSource.getId(), "id", ENTITY);
@@ -91,6 +99,10 @@ public class TypeSourceServiceImpl implements TypeSourceService {
         return typeSourceMapper.toDto(typeSourceRepository.save(existing));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteTypeSource(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
@@ -102,6 +114,10 @@ public class TypeSourceServiceImpl implements TypeSourceService {
         typeSourceRepository.delete(existing);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TypeSourceDTO findTypeSourceById(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
@@ -112,6 +128,10 @@ public class TypeSourceServiceImpl implements TypeSourceService {
                         new BadRequestAlertException("type_source_introuvable", ENTITY, "id_inexistant")));
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<TypeSourceDTO> readAllTypeSources(Pageable pageable) {
         return typeSourceRepository.findAllTypeSource(pageable)
