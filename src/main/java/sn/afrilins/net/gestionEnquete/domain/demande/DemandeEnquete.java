@@ -20,7 +20,7 @@ import javax.persistence.*;
 @EntityListeners({AuditingEntityListener.class})
 @Table(name = "DEMANDE_DEMANDE_ENQUETE")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class DemandeEnquete extends AbstractAuditingEntity {
+public class DemandeEnquete  {
 
     @Id
     @Column(name = "id", nullable = false)

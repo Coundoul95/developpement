@@ -1,7 +1,7 @@
 package sn.afrilins.net.gestionEnquete.repository.parametrage;
 
 import com.querydsl.core.BooleanBuilder;
-import io.micrometer.core.instrument.util.StringUtils;
+// import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

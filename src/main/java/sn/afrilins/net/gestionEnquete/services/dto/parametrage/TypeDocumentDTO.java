@@ -5,20 +5,22 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+
+
 @SuperBuilder(toBuilder = true)
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(name = "utilisateur", description = "le modele utilisateur")
+@Schema(name = "type_document", description = "le modele type_document")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public  class UtilisateurDTO {
+public class TypeDocumentDTO {
 
-    @Schema(name = "id", description = "l'identifiant de l'utilisateur")
+    @Schema(description = "L'identifiant du modele")
     Long id;
 
-    @Schema(name = "username")
-    String username;
+    @Schema(name = "code", description = "Le code")
+    String code;
 
-
+    @Schema(name = "libelle", description = "Le libellé")
+    String libelle;
 }

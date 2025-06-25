@@ -91,8 +91,8 @@
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc11</artifactId>
-			<version>${oracle.version}</version>
 			<scope>runtime</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -190,13 +190,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-bom</artifactId>
-			<version>${querydsl.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 			<version>${datarest.version}</version>
@@ -240,12 +233,10 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-boot-starter</artifactId>
-			<version>12.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-security-adapter</artifactId>
-			<version>12.0.4</version>
 		</dependency>
 
 		<dependency>
@@ -284,12 +275,11 @@
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
-			<version>${querydsl.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
-			<version>${querydsl.version}</version>
 		</dependency>
 
 		<dependency>
@@ -306,7 +296,6 @@
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf</artifactId>
-			<version>3.0.14.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.xhtmlrenderer</groupId>
@@ -316,18 +305,30 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>2.3.31</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>6.20.1</version>
 		</dependency>
+
+		<!-- API Jakarta Bean Validation -->
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+		</dependency>
+
+		<!-- Implémentation Hibernate Validator -->
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+
 	</dependencies>
 	<dependencyManagement>
-		<!--        keycloak adapter-->
 		<dependencies>
-
+			<!-- Dépendances déjà présentes -->
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
@@ -342,14 +343,19 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
 			<dependency>
 				<groupId>com.nimbusds</groupId>
 				<artifactId>oauth2-oidc-sdk</artifactId>
 				<version>9.11</version>
 			</dependency>
-
-
+			<!-- Ajout de querydsl-bom ici -->
+			<dependency>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-bom</artifactId>
+				<version>${querydsl.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
