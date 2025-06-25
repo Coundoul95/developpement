@@ -7,7 +7,6 @@ import sn.afrilins.net.gestionEnquete.services.dto.demande.request.EtatDemandeRe
 
 public interface EtatDemandeService {
 
-
     EtatDemandeDTO createEtatDemande(EtatDemandeRequestDTO EtatDemande);
 
     EtatDemandeDTO updateEtatDemande(EtatDemandeDTO EtatDemande);
