@@ -97,3 +97,11 @@ info:
 feign:
   circuitbreaker:
     enabled: false
+
+
+app:
+  api:
+    base-path: /v1/api
+  documents:
+    storage:
+      path: "src/main/resources/static"

@@ -163,4 +163,19 @@ public class ValidationUtils {
             throw new CustomBadRequestException(new BadRequestAlertException(field + "_format_invalide", entity, field + "_pattern"));
         }
     }
+
+    /**
+     * Vérifie qu'une valeur entière est strictement positive (> 0).
+     *
+     * @param value   la valeur à vérifier
+     * @param field   nom du champ concerné
+     * @param entity  entité liée à la validation
+     */
+    public static void requirePositive(int value, String field, String entity) {
+        if (value <= 0) {
+            throw new CustomBadRequestException(new BadRequestAlertException(field + "_doit_etre_positif", entity, field + "_negatif"));
+        }
+    }
+
+
 }
