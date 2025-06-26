@@ -11,6 +11,7 @@ import org.springframework.jms.annotation.EnableJms;
 import sn.afrilins.net.brazzajms.notifiable.EnableKTNotifiable;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 import sn.afrilins.net.gestionEnquete.repository.UtilisateurRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.DocumentRepository;
 
 import java.util.Optional;
 
@@ -26,10 +27,16 @@ public class GestionEnqueteApplication {
 		SpringApplication.run(GestionEnqueteApplication.class, args);
 	}
 
-
+//
 //	@Bean
-//	CommandLineRunner start(UtilisateurRepository repository) {
+//	CommandLineRunner start(DocumentRepository repository) {
 //		return args -> {
+//			var document = repository.findById(1L);
+//			if(document.isPresent()){
+//				document.get().setChemin("/document/81b923e3-9fb0-4070-90c8-91c707952d4f.pdf");
+//				repository.save(document.get());
+//				System.out.println(document.toString());
+//			}
 //			final String name = "Fatou Badara Sall";
 //			Optional<Utilisateur> existingUser = repository.findByUsername(name);
 //

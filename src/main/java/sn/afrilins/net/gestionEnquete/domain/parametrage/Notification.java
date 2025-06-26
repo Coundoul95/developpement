@@ -49,7 +49,6 @@ public class Notification  {
     @Builder.Default
     Boolean urgent = false;
 
-
     @Column(name = "type_notification", nullable = false, length = 50)
     String typeNotification;
 
