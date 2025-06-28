@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.TypeDocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.TypeDocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocumentService;
 
 import javax.validation.Valid;
@@ -33,8 +34,7 @@ public class TypeDocumentRessource {
             @ApiResponse(responseCode = "500", description = "Problèment du serveur")})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TypeDocumentDTO createTypeDocument(@Valid @RequestBody TypeDocumentDTO typeDocument) {
-        typeDocument.setId(null);
+    public TypeDocumentDTO createTypeDocument(@Valid @RequestBody TypeDocumentRequestDTO typeDocument) {
         return typeDocumentService.createTypeDocument(typeDocument);
     }
 

@@ -72,6 +72,7 @@ public class DocumentRessource {
             String dispositionType = download ? "attachment" : "inline";
             headers.setContentDispositionFormData(dispositionType, document.getNom() + "." + document.getExtension());
             headers.setCacheControl("max-age=3600");
+            headers.add("Permissions-Policy", "fullscreen=(self)");
             return ResponseEntity.ok().headers(headers).body(resource);
         } catch (Exception e) {
             log.error("Erreur lors de la récupération du document ID: {}", id, e);
@@ -180,6 +181,7 @@ public class DocumentRessource {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDocument(@PathVariable Long id) {
+        documentStorageService.deleteDocument(id);
         documentService.deleteDocument(id);
     }
 }

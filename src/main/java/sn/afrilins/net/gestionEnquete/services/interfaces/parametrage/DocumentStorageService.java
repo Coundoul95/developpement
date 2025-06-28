@@ -49,4 +49,12 @@ public interface DocumentStorageService {
      * @return Un objet {@link DocumentDebugInfo} contenant les détails techniques du fichier.
      */
     DocumentDebugInfo buildDebugInfo(DocumentDTO document, Resource resource);
+
+    /**
+     * Supprime physiquement le fichier associé à un document ainsi que ses métadonnées.
+     *
+     * @param documentId L'identifiant du document à supprimer.
+     */
+    void deleteDocument(Long documentId);
+
 }

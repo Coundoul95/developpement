@@ -66,7 +66,7 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
         DocumentDTO document = documentService.findDocumentById(documentId);
         String resourcePath = "static" + document.getChemin();
         Resource resource = new ClassPathResource(resourcePath);
-
+        log.debug(resource.toString());
         if (!resource.exists()) {
             throw new RuntimeException("Fichier non trouvé");
         }
@@ -110,6 +110,26 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
                 .tailleReelle(tailleReelle)
                 .repertoireBase("classpath:static")
                 .build();
+    }
+
+    @Override
+    public void deleteDocument(Long documentId) {
+        // Récupérer les infos du document
+        DocumentDTO document = documentService.findDocumentById(documentId);
+        String cheminPhysique = documentsStoragePath + document.getChemin();
+        try {
+            java.nio.file.Path path = Paths.get(cheminPhysique);
+            // Vérification existence et suppression
+            if (Files.exists(path)) {
+                Files.delete(path);
+                log.info("Fichier supprimé avec succès : {}", cheminPhysique);
+            } else {
+                log.warn("Le fichier à supprimer n'existe pas : {}", cheminPhysique);
+            }
+        } catch (IOException e) {
+            log.error("Erreur lors de la suppression du fichier : {}", cheminPhysique, e);
+            throw new RuntimeException("Impossible de supprimer le fichier", e);
+        }
     }
 
 

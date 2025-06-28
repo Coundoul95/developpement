@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @SuperBuilder(toBuilder = true)
 @Data
 @AllArgsConstructor
@@ -38,4 +40,7 @@ public class DocumentDTO {
 
     @Schema(description = "Le type de document")
     TypeDocumentDTO type;
+
+    @Schema(description = "La date de création")
+    LocalDateTime createdAt;
 }
