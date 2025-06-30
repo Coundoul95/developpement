@@ -50,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
         Utilisateur utilisateur = utilisateurRepository.findById(notification.getUtilisateurId())
                 .orElseThrow(() -> new CustomBadRequestException(
                         new BadRequestAlertException("utilisateur_existe_pas", "utilisateur",
-                                "utilisateur_existe_pas")));
+                                "utilisateur_existe_pas"))  );
 
         Notification entity = Notification.builder()
                 .message(notification.getMessage())

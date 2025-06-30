@@ -1,6 +1,7 @@
 package sn.afrilins.net.gestionEnquete.controllers.parametre;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -151,8 +152,14 @@ public class DocumentRessource {
             @ApiResponse(responseCode = "200", description = "Liste des documents retournée avec succès"),
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
     })
-    public Page<DocumentDTO> readAllDocuments(Pageable pageable) {
-        return documentService.readAllDocuments(pageable);
+    public Page<DocumentDTO> readAllDocuments(
+            Pageable pageable,
+            @Parameter(description = "le nom du document")   @RequestParam(required = false) String nom,
+            @Parameter(description = "l'extention du document")  @RequestParam(required = false) String extension,
+            @Parameter(description = "le type de document") @RequestParam(required = false) String type,
+            @Parameter(description = "la catégorie d'extenstion: image, document, code...", example = "document") @RequestParam(required = false) String categorie
+    ) {
+        return documentService.readAllDocuments(pageable, nom, extension, type, categorie);
     }
 
     /**

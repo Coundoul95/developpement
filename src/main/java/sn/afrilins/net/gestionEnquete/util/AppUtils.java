@@ -3,11 +3,25 @@ package sn.afrilins.net.gestionEnquete.util;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Classe utilitaire centralisée pour certaines fonctions personnalisées dans l'application.
  */
 public class AppUtils {
+
+
+    public static final Map<String, List<String>> FILE_EXTENSION_CATEGORY_MAP = Map.of(
+            "document", List.of("pdf", "doc", "docx", "odt", "xls", "xlsx", "csv", "ppt", "pptx", "txt", "md"),
+            "image", List.of("jpg", "jpeg", "png", "gif", "svg"),
+            "audio", List.of("mp3", "wav", "flac"),
+            "video", List.of("mp4", "avi", "mov", "wmv", "mkv"),
+            "archive", List.of("zip", "rar", "7z"),
+            "code", List.of("json", "xml", "html", "htm", "css", "js", "ts"),
+            "executable", List.of("exe", "apk", "iso")
+    );
+
 
     /**
      * Récupère l'extension d'un fichier à partir de son nom.

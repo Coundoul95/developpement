@@ -2,6 +2,7 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.parametrage;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.DocumentRequestDTO;
@@ -44,6 +45,6 @@ public interface DocumentService {
      * @param pageable les informations de pagination
      * @return une page de documents
      */
-    Page<DocumentDTO> readAllDocuments(Pageable pageable);
+        Page<DocumentDTO> readAllDocuments(Pageable pageable, String nom, String extension, String type, String categorie);
 
 }

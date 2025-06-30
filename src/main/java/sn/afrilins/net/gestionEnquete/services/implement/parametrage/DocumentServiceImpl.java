@@ -108,8 +108,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Page<DocumentDTO> readAllDocuments(Pageable pageable) {
-        return documentRepository.findAllDocument(pageable).map(documentMapper::toDto);
+    public Page<DocumentDTO> readAllDocuments(Pageable pageable, String nom, String extension, String type, String categorie) {
+        return documentRepository.findAllDocument(pageable, nom, extension, type, categorie).map(documentMapper::toDto);
     }
 
 }
