@@ -8,6 +8,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -53,6 +54,15 @@ public class Document {
     @JoinColumn(name = "type_document_id", nullable = false)
     @JsonIgnoreProperties({"type_document"})
     TypeDocument type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_info_id") // champ nullable → une source_info est facultative
+    @JsonIgnoreProperties("documents")
+    SourceInfo sourceInfo;
+
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "utilisateur_id", nullable = false)
+//    Utilisateur utilisateur;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

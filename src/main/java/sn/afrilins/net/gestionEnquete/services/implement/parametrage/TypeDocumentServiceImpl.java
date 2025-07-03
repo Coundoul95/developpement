@@ -109,8 +109,8 @@ public class TypeDocumentServiceImpl implements TypeDocumentService {
     }
 
     @Override
-    public Page<TypeDocumentDTO> readAllTypeDocument(Pageable pageable) {
-        return typeDocumentRepository.findAllTypeDocument(pageable)
+    public Page<TypeDocumentDTO> readAllTypeDocument(String code, String libelle, Pageable pageable) {
+        return typeDocumentRepository.findAllTypeDocument(code, libelle, pageable)
                 .map(typeDocumentMapper::toDto);
     }
 }

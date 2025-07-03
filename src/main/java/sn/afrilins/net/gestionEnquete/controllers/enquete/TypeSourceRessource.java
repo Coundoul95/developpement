@@ -63,8 +63,12 @@ public class TypeSourceRessource {
     })
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public Page<TypeSourceDTO> readTypeSources(Pageable pageable) {
-        return typeSourceService.readAllTypeSources(pageable);
+    public Page<TypeSourceDTO> readTypeSources(
+            Pageable pageable,
+            @Parameter(description = "Le code") @RequestParam(required = false) String code,
+            @Parameter(description = "Le libelle") @RequestParam(required = false) String libelle
+            ) {
+        return typeSourceService.readAllTypeSources(code, libelle, pageable);
     }
 
     @Operation(summary = "Rechercher un type de source par ID", description = "Retourne un type de source à partir de son identifiant")

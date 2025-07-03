@@ -20,5 +20,4 @@ public  class UtilisateurDTO {
     @Schema(name = "username")
     String username;
 
-
 }

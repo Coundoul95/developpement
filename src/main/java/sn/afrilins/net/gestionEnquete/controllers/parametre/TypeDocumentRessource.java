@@ -64,8 +64,11 @@ public class TypeDocumentRessource {
             @ApiResponse(responseCode = "500", description = "Internal server error during request processing")})
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public Page<TypeDocumentDTO> readTypeDocument(Pageable pageable) {
-        return typeDocumentService.readAllTypeDocument(pageable);
+    public Page<TypeDocumentDTO> readTypeDocument(
+            Pageable pageable,
+            @Parameter(description = "Le code") @RequestParam(required = false) String code,
+            @Parameter(description = "Le libelle") @RequestParam(required = false) String libelle) {
+        return typeDocumentService.readAllTypeDocument(code, libelle, pageable);
     }
 
     @ApiResponses(value = {

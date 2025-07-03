@@ -47,5 +47,5 @@ public interface TypeDocumentService {
      * @param pageable les informations de pagination
      * @return une page de types de document
      */
-    Page<TypeDocumentDTO> readAllTypeDocument(Pageable pageable);
+    Page<TypeDocumentDTO> readAllTypeDocument(String code, String libelle, Pageable pageable);
 }

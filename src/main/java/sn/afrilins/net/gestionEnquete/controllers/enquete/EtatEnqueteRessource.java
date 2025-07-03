@@ -63,8 +63,11 @@ public class EtatEnqueteRessource {
     })
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public Page<EtatEnqueteDTO> readEtatEnquetes(Pageable pageable) {
-        return etatEnqueteService.readAllEtatEnquetes(pageable);
+    public Page<EtatEnqueteDTO> readEtatEnquetes(
+            Pageable pageable,
+            @Parameter(description = "Le code") @RequestParam(required = false) String code,
+            @Parameter(description = "Le libelle") @RequestParam(required = false) String libelle) {
+        return etatEnqueteService.readAllEtatEnquetes(code, libelle, pageable);
     }
 
     @Operation(summary = "Rechercher un état d'enquête par ID", description = "Retourne un état d'enquête à partir de son identifiant")

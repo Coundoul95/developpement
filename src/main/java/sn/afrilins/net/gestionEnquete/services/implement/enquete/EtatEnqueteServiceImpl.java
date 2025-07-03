@@ -134,8 +134,8 @@ public class EtatEnqueteServiceImpl implements EtatEnqueteService {
      * {@inheritDoc}
      */
     @Override
-    public Page<EtatEnqueteDTO> readAllEtatEnquetes(Pageable pageable) {
-        return etatEnqueteRepository.findAllEtatEnquete(pageable)
+    public Page<EtatEnqueteDTO> readAllEtatEnquetes(String code, String libelle, Pageable pageable) {
+        return etatEnqueteRepository.findAllEtatEnquete(code, libelle, pageable)
                 .map(etatEnqueteMapper::toDto);
     }
 }
