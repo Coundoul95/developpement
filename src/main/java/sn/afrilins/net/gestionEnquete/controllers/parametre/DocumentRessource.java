@@ -22,7 +22,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/api/documents")
-@Tag(name = "/v1/api/documents", description = "Contrôleur de gestion des documents")
+@Tag(name = "/v1/api/documents", description = "Document, controllers")
 @RequiredArgsConstructor
 @Slf4j
 public class DocumentRessource {
