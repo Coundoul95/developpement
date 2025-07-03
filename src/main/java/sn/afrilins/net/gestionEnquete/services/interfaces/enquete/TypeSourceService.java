@@ -47,5 +47,5 @@ public interface TypeSourceService {
      * @param pageable les informations de pagination
      * @return une page de types de source
      */
-    Page<TypeSourceDTO> readAllTypeSources(Pageable pageable);
+    Page<TypeSourceDTO> readAllTypeSources(String code, String libelle, Pageable pageable);
 }

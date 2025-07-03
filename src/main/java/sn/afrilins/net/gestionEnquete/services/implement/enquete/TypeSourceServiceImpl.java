@@ -133,8 +133,8 @@ public class TypeSourceServiceImpl implements TypeSourceService {
      * {@inheritDoc}
      */
     @Override
-    public Page<TypeSourceDTO> readAllTypeSources(Pageable pageable) {
-        return typeSourceRepository.findAllTypeSource(pageable)
+    public Page<TypeSourceDTO> readAllTypeSources(String code, String libelle, Pageable pageable) {
+        return typeSourceRepository.findAllTypeSource(code, libelle, pageable)
                 .map(typeSourceMapper::toDto);
     }
 

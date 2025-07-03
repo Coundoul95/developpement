@@ -3,6 +3,7 @@ package sn.afrilins.net.gestionEnquete.domain.parametrage;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ public class Utilisateur {
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("utilisateur")
     List<Notification> notifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("utilisateur")
+    List<SourceInfo> sourceInfos = new ArrayList<>();
 
 }
 

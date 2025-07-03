@@ -47,5 +47,5 @@ public interface EtatEnqueteService {
      * @param pageable les informations de pagination
      * @return une page d’états d’enquête
      */
-    Page<EtatEnqueteDTO> readAllEtatEnquetes(Pageable pageable);
+    Page<EtatEnqueteDTO> readAllEtatEnquetes(String code, String libelle, Pageable pageable);
 }
