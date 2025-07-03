@@ -99,8 +99,10 @@ public class SourceInfoRessource {
             Pageable pageable,
             @Parameter(description = "Identifiant de l'utilisateur")
             @RequestParam(required = false) Long utilisateurId,
-            @Parameter(description = "Identifiant de l'état de la source")
-            @RequestParam(required = false) Long etatId,
+            @Parameter(description = "Le code de l'état de la source")
+            @RequestParam(required = false) String etat,
+            @Parameter(description = "Le code du type de la source")
+            @RequestParam(required = false) String type,
             @Parameter(description = "Nom de la source")
             @RequestParam(required = false) String nom,
             @Parameter(description = "Niveau de fiabilité de la source")
@@ -108,7 +110,7 @@ public class SourceInfoRessource {
             @Parameter(description = "Terme de recherche global (nom, fiabilité, etc.)")
             @RequestParam(required = false) String search
     ) {
-        return sourceInfoService.readAllSourceInfo(utilisateurId, nom, niveauFiabilite, etatId, search, pageable);
+        return sourceInfoService.readAllSourceInfo(utilisateurId, nom, niveauFiabilite, etat, type, search, pageable);
     }
 
 

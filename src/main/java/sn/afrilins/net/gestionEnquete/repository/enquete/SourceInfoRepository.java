@@ -23,7 +23,8 @@ public interface SourceInfoRepository extends JpaRepository<SourceInfo, Long>, Q
      * @param utilisateurId     Identifiant de l'utilisateur associé à la source.
      * @param nom               Nom (ou une partie du nom) de la source.
      * @param niveauFiabilite   Niveau de fiabilité de la source (filtrage partiel, insensible à la casse).
-     * @param etatId            Identifiant de l'état de la source.
+     * @param etat              Le code de l'état de la source.
+     * @param type              Le code du type de la source.
      * @param search            Terme de recherche global appliqué sur plusieurs champs (nom, fiabilité, commentaires, description).
      * @param pageable          Objet de pagination et de tri.
      * @return                  Page de résultats correspondant aux critères spécifiés.
@@ -32,7 +33,8 @@ public interface SourceInfoRepository extends JpaRepository<SourceInfo, Long>, Q
             Long utilisateurId,
             String nom,
             String niveauFiabilite,
-            Long etatId,
+            String etat,
+            String type,
             String search,
             Pageable pageable) {
 
@@ -43,9 +45,14 @@ public interface SourceInfoRepository extends JpaRepository<SourceInfo, Long>, Q
             builder.and(source.utilisateur.id.eq(utilisateurId));
         }
 
-        if (etatId != null) {
-            builder.and(source.etat.id.eq(etatId));
+        if (etat != null) {
+            builder.and(source.etat.code.eq(etat));
         }
+
+        if (type != null) {
+            builder.and(source.type.code.eq(type));
+        }
+
 
         if (nom != null && !nom.isBlank()) {
             builder.and(source.nom.containsIgnoreCase(nom));

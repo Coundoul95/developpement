@@ -158,8 +158,8 @@ public class SourceInfoServiceImpl implements SourceInfoService {
     }
 
     @Override
-    public Page<SourceInfoDTO> readAllSourceInfo(Long utilisateurId, String nom, String niveauFiabilite, Long etatId, String search, Pageable pageable) {
-        return  this.sourceInfoRepository.readAllSourceInfo(utilisateurId, nom, niveauFiabilite, etatId, search, pageable).map(sourceInfoMapper::toDto);
+    public Page<SourceInfoDTO> readAllSourceInfo(Long utilisateurId, String nom, String niveauFiabilite,  String etat, String type, String search, Pageable pageable) {
+        return  this.sourceInfoRepository.readAllSourceInfo(utilisateurId, nom, niveauFiabilite, etat, type, search, pageable).map(sourceInfoMapper::toDto);
     }
 
     @Override
