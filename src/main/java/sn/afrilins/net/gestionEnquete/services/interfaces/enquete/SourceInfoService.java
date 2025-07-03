@@ -43,7 +43,7 @@ public interface SourceInfoService {
      */
     SourceInfoDTO findSourceInfoById(Long id);
 
-    Page<SourceInfoDTO> readAllSourceInfo(Long utilisateurId, String nom, String niveauFiabilite, Long etatId, String search, Pageable pageable);
+    Page<SourceInfoDTO> readAllSourceInfo(Long utilisateurId, String nom, String niveauFiabilite, String etat, String type, String search, Pageable pageable);
 
     SourceInfoDTO createSourceInfoWithFiles(@Valid SourceInfoRequestDTO requestDTO, List<MultipartFile> files);
 }
