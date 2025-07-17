@@ -3,7 +3,7 @@ package sn.afrilins.net.gestionEnquete.services.implement.utilisateur;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
-import sn.afrilins.net.gestionEnquete.repository.UtilisateurRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.services.interfaces.utilisateur.UtilisateurService;
 
 import java.util.Optional;

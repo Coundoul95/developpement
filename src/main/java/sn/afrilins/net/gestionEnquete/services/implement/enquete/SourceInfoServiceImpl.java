@@ -13,7 +13,7 @@ import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
-import sn.afrilins.net.gestionEnquete.repository.UtilisateurRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatSourceInfoRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.SourceInfoRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.TypeSourceRepository;
@@ -24,7 +24,6 @@ import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.SourceInfoReq
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.SourceInfoUpdateRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.SourceInfoService;
-import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.TypeSourceService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.SourceInfoMapper;
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
