@@ -1,4 +1,4 @@
-package sn.afrilins.net.gestionEnquete.repository;
+package sn.afrilins.net.gestionEnquete.repository.parametrage;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

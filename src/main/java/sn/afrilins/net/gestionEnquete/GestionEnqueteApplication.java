@@ -1,19 +1,12 @@
 package sn.afrilins.net.gestionEnquete;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
 import sn.afrilins.net.brazzajms.notifiable.EnableKTNotifiable;
-import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
-import sn.afrilins.net.gestionEnquete.repository.UtilisateurRepository;
-import sn.afrilins.net.gestionEnquete.repository.parametrage.DocumentRepository;
-
-import java.util.Optional;
 
 
 @EnableKTNotifiable

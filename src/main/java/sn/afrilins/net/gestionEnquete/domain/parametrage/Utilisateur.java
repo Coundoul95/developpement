@@ -36,5 +36,9 @@ public class Utilisateur {
     @JsonIgnoreProperties("utilisateur")
     List<SourceInfo> sourceInfos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("utilisateur")
+    List<SourceInfo> evenementCalendriers = new ArrayList<>();
+
 }
 
