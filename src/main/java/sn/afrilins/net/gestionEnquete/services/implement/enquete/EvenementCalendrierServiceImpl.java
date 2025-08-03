@@ -15,12 +15,15 @@ import sn.afrilins.net.gestionEnquete.repository.enquete.EvenementCalendrierRepo
 import sn.afrilins.net.gestionEnquete.repository.enquete.TypeEvenementRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.EvenementCalendrierDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.StatistiqueCalendrierDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.EvenementCalendrierRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EvenementCalendrierService;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EvenementCalendrierMapper;
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @Slf4j
@@ -158,5 +161,40 @@ public class EvenementCalendrierServiceImpl implements EvenementCalendrierServic
         return evenementCalendrierRepository
                 .findAllEvenementCalendrier(search, titre, heure, duree, priorite, date, utilisateurId, typeCode, pageable)
                 .map(evenementCalendrierMapper::toDto);
+    }
+
+    @Override
+    public StatistiqueCalendrierDTO getStatistiquesSemaine(Long utilisateurId) {
+        LocalDate aujourdHui = LocalDate.now();
+        LocalDate debutSemaine = aujourdHui.with(DayOfWeek.MONDAY);
+        LocalDate finSemaine = aujourdHui.with(DayOfWeek.SUNDAY);
+
+        List<EvenementCalendrier> evenements = evenementCalendrierRepository
+                .findAllByUtilisateurIdAndDateBetween(utilisateurId, debutSemaine, finSemaine);
+
+        int totalEvenements = evenements.size();
+        int totalUrgents = (int) evenements.stream()
+                .filter(e -> "URGENT".equalsIgnoreCase(e.getPriorite()))
+                .count();
+
+        // Échéances dynamiques : événements dans les 3 prochains jours
+        int totalEcheances = (int) evenements.stream()
+                .filter(e -> {
+                    LocalDate date = e.getDate();
+                    System.out.println(date.toString()+ " "+ date.isBefore(aujourdHui)+ " "+date.isAfter(aujourdHui.plusDays(3)));
+                    return date != null &&
+                            !date.isBefore(aujourdHui) &&
+                            !date.isAfter(aujourdHui.plusDays(3));
+                })
+                .count();
+
+        int totalEnquetes = 0; // à compléter si tu as des enquêtes
+
+        return StatistiqueCalendrierDTO.builder()
+                .totalEvenements(totalEvenements)
+                .totalUrgents(totalUrgents)
+                .totalEcheances(totalEcheances)
+                .totalEnquetes(totalEnquetes)
+                .build();
     }
 }
