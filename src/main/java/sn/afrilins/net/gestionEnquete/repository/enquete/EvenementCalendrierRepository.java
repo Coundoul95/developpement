@@ -84,5 +84,6 @@ public interface EvenementCalendrierRepository extends JpaRepository<EvenementCa
         return findAll(predicate, pageable);
     }
 
+    List<EvenementCalendrier> findAllByUtilisateurIdAndDateBetween(Long utilisateurId, LocalDate debutSemaine, LocalDate finSemaine);
 }
 
