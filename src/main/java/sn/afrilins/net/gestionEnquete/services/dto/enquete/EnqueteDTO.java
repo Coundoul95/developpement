@@ -25,6 +25,12 @@ public class EnqueteDTO {
     @Schema(description = "L'état")
     EtatEnqueteDTO etat;
 
+    @Schema(description = "La référence")
+    String reference;
+
+    @Schema(description = "La progression")
+    int progression;
+
     @Schema(description = "La date de début")
     LocalDateTime dateDebut;
 

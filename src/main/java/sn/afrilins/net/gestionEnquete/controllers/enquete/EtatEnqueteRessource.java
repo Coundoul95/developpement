@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.controllers.enquete;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +18,7 @@ import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EtatEnqueteSer
 
 import javax.validation.Valid;
 
+@Hidden
 @RestController
 @RequestMapping("/v1/api/etat/enquete")
 @Tag(name = "/v1/api/etat/enquete", description = "EtatEnquete, controller")

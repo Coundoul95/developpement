@@ -12,10 +12,14 @@ import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.EtatEnquete;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
+import sn.afrilins.net.gestionEnquete.repository.demande.DemandeEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
+import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteMapper;
+
+import java.util.Objects;
 
 @AllArgsConstructor
 @Slf4j
@@ -26,13 +30,24 @@ public class EnqueteServiceImpl implements EnqueteService {
 
     final EnqueteRepository enqueteRepository;
     final EtatEnqueteRepository etatEnqueteRepository;
+    final DemandeEnqueteRepository demandeEnqueteRepository;
+    final EnqueteMapper enqueteMapper;
 
     static final String ENTITY = "enquete";
 
     @Override
-    public EnqueteDTO createEnquete(EnqueteDTO dto) {
-//       var entity = Enquete.builder().etat(getEtatOrThrow(dto.)).dateDebut(dto.getDateDebut()).dateFin(dto.getDateFin()).build();
-        return null;
+    public EnqueteDTO createEnquete(Long demandeId) {
+        var demande = demandeEnqueteRepository.findById(demandeId).orElseThrow(()->
+                new CustomBadRequestException(
+                    new BadRequestAlertException("demande_id", ENTITY, "demande_inexistant")
+                )
+        );
+        var etat = etatEnqueteRepository.findFirstByCode("00").orElse(null);
+        if(Objects.isNull(etat)){
+            etat = etatEnqueteRepository.save(EtatEnquete.builder().code("00").libelle("En attente").build());
+        }
+        var entity = Enquete.builder().etat(etat).demandeEnquete(demande).progression(0).build();
+        return enqueteMapper.toDto(enqueteRepository.save(entity));
     }
 
     @Override

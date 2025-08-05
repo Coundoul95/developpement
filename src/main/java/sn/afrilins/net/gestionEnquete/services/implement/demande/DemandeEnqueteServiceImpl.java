@@ -27,6 +27,7 @@ import sn.afrilins.net.gestionEnquete.services.mapper.demande.DemandeEnqueteMapp
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -96,19 +97,27 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
 
         dto.getEtatCode().ifPresent(etatCode->{
             ValidationUtils.requireNonBlank(etatCode, "etatCode", ENTITY);
+
+            if(Objects.equals(entity.getEtat().getCode(), "01") || Objects.equals(entity.getEtat().getCode(), "02")){
+                throw new CustomBadRequestException(new BadRequestAlertException("impossible de changer l'état",ENTITY,"etatCode"));
+            }
             entity.setDateAnnulation(null);
             entity.setDateValidation(null);
-            if(etatCode == "01"){
+            if(etatCode.equals("01")){
                 entity.setDateValidation(LocalDateTime.now());
-
             }
-            if(etatCode == "02"){
+            if(etatCode.equals("02")){
                 entity.setDateAnnulation(LocalDateTime.now());
             }
             entity.setEtat(getEtatOrThrow(etatCode));
         });
 
-        return demandeEnqueteMapper.toDto(demandeEnqueteRepository.save(entity));
+        var entitySave = demandeEnqueteRepository.save(entity);
+        if(Objects.equals(entitySave.getEtat().getCode(), "01")){
+            enqueteService.createEnquete(entitySave.getId());
+        }
+
+        return demandeEnqueteMapper.toDto(entitySave);
     }
 
     @Override
@@ -136,12 +145,23 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
         ValidationUtils.requireMinLength(nouvelEtatCode, 2, "etat", ENTITY);
 
         var demande = getDemandeOrThrow(demandeId);
+
+        if(Objects.equals(demande.getEtat().getCode(), "01" ) || Objects.equals(demande.getEtat().getCode(), "02")){
+            throw new  CustomBadRequestException(
+                    new BadRequestAlertException("impossible de change l'état", ENTITY, "etatCode")
+            );
+        }
         var etat = etatDemandeRepository.findFirstByCode(nouvelEtatCode)
                 .orElseThrow(() -> new CustomBadRequestException(
                         new BadRequestAlertException("etat_introuvable", ENTITY, "etat_inexistant")));
 
         demande.setEtat(etat);
-        return demandeEnqueteMapper.toDto(demandeEnqueteRepository.save(demande));
+        var entitySave = demandeEnqueteRepository.save(demande);
+        if(Objects.equals(entitySave.getEtat().getCode(), "01") && Objects.isNull(entitySave.getEnquete())){
+                enqueteService.createEnquete(entitySave.getId());
+                entitySave = demandeEnqueteRepository.getById(entitySave.getId());
+        }
+        return demandeEnqueteMapper.toDto(entitySave);
     }
 
     private void validateDemande(DemandeEnqueteRequestDTO dto) {

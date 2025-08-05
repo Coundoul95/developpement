@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @SuperBuilder(toBuilder = true)
 @Data
@@ -16,7 +17,8 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EtatDemandeDTO {
 
-    @Schema(description = "L'identifiant du modele")
+
+    @JsonIgnore
     Long id;
 
     @Schema(name = "code", description = "Le code")

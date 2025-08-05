@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.services.dto.enquete;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EtatEnqueteDTO {
 
-    @Schema(description = "L'identifiant du modele")
+    @JsonIgnore
     Long id;
 
     @Schema(name = "code", description = "Le code")

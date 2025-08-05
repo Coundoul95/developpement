@@ -9,10 +9,10 @@ public interface EnqueteService {
     /**
      * Crée une nouvelle enquete.
      *
-     * @param dto les données de la conclusion à créer
+     * @param demandeId l'identifiant de la demande
      * @return la conclusion créée
      */
-    EnqueteDTO createEnquete(EnqueteDTO dto);
+    EnqueteDTO createEnquete(Long demandeId);
 
     /**
      * Met à jour une enquête existante.

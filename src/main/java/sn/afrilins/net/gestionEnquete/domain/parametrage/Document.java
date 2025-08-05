@@ -8,10 +8,83 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+//
+//@Getter
+//@Setter
+//@Entity
+//@SuperBuilder(toBuilder = true)
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@FieldDefaults(level = AccessLevel.PRIVATE)
+////@EntityListeners({AuditingEntityListener.class})
+//@Table(name = "PARAMETRAGE_DOCUMENT")
+//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//public class Document {
+//
+//    @Id
+//    @Column(name = "id", nullable = false)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GE_PARAMETRAGE_DOCUMENT")
+//    @SequenceGenerator(name = "SEQ_GE_PARAMETRAGE_DOCUMENT", sequenceName = "SEQ_GE_PARAMETRAGE_DOCUMENT", allocationSize = 1)
+//    Long id;
+//
+//    @Column(name = "nom", nullable = false)
+//    String nom;
+//
+//    @Column(name = "description")
+//    String description;
+//
+//    @Column(name = "chemin",  nullable = false)
+//    String chemin;
+//
+//    @Column(name = "extension",  nullable = false)
+//    String extension;
+//
+//    @Column(name = "taille", nullable = false)
+//    int taille;
+//
+//    @Column(name = "version", nullable = false)
+//    @Builder.Default
+//    int version = 0;
+//
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "type_document_id", nullable = false)
+//    @JsonIgnoreProperties({"type_document"})
+//    TypeDocument type;
+//
+////    @ManyToOne(fetch = FetchType.LAZY)
+////    @JoinColumn(name = "source_info_id") // champ nullable → une source_info est facultative
+////    @JsonIgnoreProperties("documents")
+////    SourceInfo sourceInfo;
+//
+//    @ManyToMany(mappedBy = "documents")
+//    @JsonIgnoreProperties("documents")
+//    List<SourceInfo> sourceInfos = new ArrayList<>();
+//
+//    @ManyToOne
+//    @JoinColumn(name = "demande_enquete_id")
+//    @JsonIgnoreProperties("documents")
+//    DemandeEnquete demandeEnquete;
+//
+////    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+////    @JoinColumn(name = "utilisateur_id", nullable = false)
+////    Utilisateur utilisateur;
+//
+//    @CreationTimestamp
+//    @Column(name = "created_at", updatable = false)
+//    LocalDateTime createdAt;
+//
+//    @UpdateTimestamp
+//    @Column(name = "updated_at")
+//    LocalDateTime updatedAt;
+//}
+
 
 @Getter
 @Setter
@@ -20,55 +93,52 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-//@EntityListeners({AuditingEntityListener.class})
 @Table(name = "PARAMETRAGE_DOCUMENT")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Document {
 
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GE_PARAMETRAGE_DOCUMENT")
     @SequenceGenerator(name = "SEQ_GE_PARAMETRAGE_DOCUMENT", sequenceName = "SEQ_GE_PARAMETRAGE_DOCUMENT", allocationSize = 1)
     Long id;
 
-    @Column(name = "nom", nullable = false)
+    @Column(nullable = false)
     String nom;
 
-    @Column(name = "description")
+    @Column(columnDefinition = "CLOB")
     String description;
 
-    @Column(name = "chemin",  nullable = false)
+    @Column(nullable = false)
     String chemin;
 
-    @Column(name = "extension",  nullable = false)
+    @Column(nullable = false)
     String extension;
 
-    @Column(name = "taille", nullable = false)
+    @Column(nullable = false)
     int taille;
 
-    @Column(name = "version", nullable = false)
+    @Column(nullable = false)
     @Builder.Default
     int version = 0;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "type_document_id", nullable = false)
-    @JsonIgnoreProperties({"type_document"})
+    @JsonIgnoreProperties("documents")
     TypeDocument type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_info_id") // champ nullable → une source_info est facultative
+    @ManyToMany(mappedBy = "documents")
     @JsonIgnoreProperties("documents")
-    SourceInfo sourceInfo;
+    List<SourceInfo> sourceInfos = new ArrayList<>();
 
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "utilisateur_id", nullable = false)
-//    Utilisateur utilisateur;
+    @ManyToOne
+    @JoinColumn(name = "demande_enquete_id")
+    @JsonIgnoreProperties("documents")
+    DemandeEnquete demandeEnquete;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     LocalDateTime updatedAt;
 }

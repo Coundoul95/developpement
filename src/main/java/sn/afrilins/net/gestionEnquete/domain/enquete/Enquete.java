@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
+import sn.afrilins.net.gestionEnquete.util.ReferenceGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,20 +33,27 @@ public class Enquete {
     @SequenceGenerator(name = "SEQ_GE_ENQUETE_ENQUETE", sequenceName = "SEQ_GE_ENQUETE_ENQUETE", allocationSize = 1)
     Long id;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "date_debut", updatable = false)
     LocalDateTime dateDebut;
 
-    @Column(name = "updated_at")
+    @Column(name = "date_fin")
     LocalDateTime dateFin;
+
+    @Column(name = "progression", nullable = false)
+    @Builder.Default
+    int progression = 0;
+
+    @Column(name = "reference", nullable = false, unique = true)
+    String reference ;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "etat_enquete_id", nullable = false)
     @JsonIgnoreProperties("enquetes")
     EtatEnquete etat;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "demande_enquete_id", nullable = false)
-    @JsonIgnoreProperties("enquetes")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "demande_enquete_id", nullable = false, unique = true)
+    @JsonIgnoreProperties("enquete")
     DemandeEnquete demandeEnquete;
 
     @CreationTimestamp
@@ -55,4 +63,11 @@ public class Enquete {
     @UpdateTimestamp
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (reference == null || reference.isEmpty()) {
+            reference = ReferenceGenerator.generateReference("ENQ");
+        }
+    }
 }

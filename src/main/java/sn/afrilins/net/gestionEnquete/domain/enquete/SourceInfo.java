@@ -14,6 +14,7 @@ import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -34,13 +35,13 @@ public class SourceInfo {
     @SequenceGenerator(name = "SEQ_GE_ENQUETE_SOURCE_INFO", sequenceName = "SEQ_GE_ENQUETE_SOURCE_INFO", allocationSize = 1)
     Long id;
 
-    @Column(name = "nom", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     String nom;
 
-    @Column(name = "description", columnDefinition = "CLOB")
+    @Column( columnDefinition = "CLOB")
     String description;
 
-    @Column(name = "commentaires", columnDefinition = "CLOB")
+    @Column(columnDefinition = "CLOB")
     String commentaires;
 
     @Column(name = "niveau_fiabilite", nullable = false)
@@ -71,8 +72,17 @@ public class SourceInfo {
     @JsonIgnoreProperties({"source_info"})
     Utilisateur utilisateur;
 
-    @OneToMany(mappedBy = "sourceInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Document> documents;
+//    @OneToMany(mappedBy = "sourceInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+//    List<Document> documents;
+
+    @ManyToMany
+    @JoinTable(
+            name = "source_document",
+            joinColumns = @JoinColumn(name = "source_id"),
+            inverseJoinColumns = @JoinColumn(name = "document_id")
+    )
+    @JsonIgnoreProperties("sourceInfos")
+    private List<Document> documents = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -83,3 +93,14 @@ public class SourceInfo {
     LocalDateTime updatedAt;
 
 }
+
+
+/*
+    @ManyToMany
+    @JoinTable(
+        name = "traitement_document",
+        joinColumns = @JoinColumn(name = "traitement_id"),
+        inverseJoinColumns = @JoinColumn(name = "document_id")
+    )
+    private List<Document> documents = new ArrayList<>();
+*/

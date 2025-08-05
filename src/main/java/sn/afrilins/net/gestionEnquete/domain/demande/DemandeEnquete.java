@@ -10,10 +10,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import sn.afrilins.net.gestionEnquete.domain.audit.AbstractAuditingEntity;
+import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -72,6 +76,17 @@ public class DemandeEnquete  {
     @JoinColumn(name = "utilisateur_id", nullable = false)
     @JsonIgnoreProperties("demandeEnquetes")
     Utilisateur utilisateur;
+
+//    @OneToMany(mappedBy = "demandeEnquete")
+//    @JsonIgnoreProperties("demandeEnquete")
+//    List<Document> documents = new ArrayList<>();
+    @OneToMany(mappedBy = "demandeEnquete", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Document> documents = new ArrayList<>();
+
+    @OneToOne(mappedBy = "demandeEnquete", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JsonIgnoreProperties("demandeEnquete")
+    Enquete enquete;
+
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

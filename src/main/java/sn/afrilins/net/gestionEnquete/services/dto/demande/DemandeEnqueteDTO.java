@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.UtilisateurDTO;
 
 import java.time.LocalDateTime;
@@ -48,6 +49,9 @@ public class DemandeEnqueteDTO {
 
     @Schema(name = "etat", description = "L'état")
     EtatDemandeDTO etat;
+
+    @Schema(name = "enquete", description = "L'état")
+    EnqueteDTO enquete;
 
     @Schema(name = "concerne", description = "Le concerné")
     ConcerneDTO concerne;
