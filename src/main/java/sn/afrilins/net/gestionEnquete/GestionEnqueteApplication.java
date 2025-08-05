@@ -1,12 +1,17 @@
 package sn.afrilins.net.gestionEnquete;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
 import sn.afrilins.net.brazzajms.notifiable.EnableKTNotifiable;
+import sn.afrilins.net.gestionEnquete.domain.demande.Concerne;
+import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.repository.demande.ConcerneRepository;
 
 
 @EnableKTNotifiable
@@ -20,27 +25,12 @@ public class GestionEnqueteApplication {
 		SpringApplication.run(GestionEnqueteApplication.class, args);
 	}
 
-//
-//	@Bean
-//	CommandLineRunner start(DocumentRepository repository) {
-//		return args -> {
-//			var document = repository.findById(1L);
-//			if(document.isPresent()){
-//				document.get().setChemin("/document/81b923e3-9fb0-4070-90c8-91c707952d4f.pdf");
-//				repository.save(document.get());
-//				System.out.println(document.toString());
-//			}
-//			final String name = "Fatou Badara Sall";
-//			Optional<Utilisateur> existingUser = repository.findByUsername(name);
-//
-//			if (existingUser.isEmpty()) {
-//				Utilisateur newUser = Utilisateur.builder()
-//						.username(name)
-//						.build();
-//
-//				repository.save(newUser);
-//			}
-//		};
-//	}
+	@Bean
+	CommandLineRunner start(ConcerneRepository repository){
+		return  args -> {
+//			repository.save(Concerne.builder().id(1l).type(TypeConcerne.EMPLOYEUR).numero("778133537").regionSocial("Dakar, Diamniadio").build());
+		};
+	}
+
 
 }

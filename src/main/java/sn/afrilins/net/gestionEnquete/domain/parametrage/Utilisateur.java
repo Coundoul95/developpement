@@ -3,6 +3,8 @@ package sn.afrilins.net.gestionEnquete.domain.parametrage;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
+import sn.afrilins.net.gestionEnquete.domain.enquete.EvenementCalendrier;
 import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 
 import javax.persistence.*;
@@ -38,7 +40,11 @@ public class Utilisateur {
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("utilisateur")
-    List<SourceInfo> evenementCalendriers = new ArrayList<>();
+    List<DemandeEnquete> demandeEnquetes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("utilisateur")
+    List<EvenementCalendrier> evenementCalendriers = new ArrayList<>();
 
 }
 
