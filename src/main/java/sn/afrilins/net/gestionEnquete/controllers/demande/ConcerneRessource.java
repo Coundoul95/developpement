@@ -1,7 +1,5 @@
 package sn.afrilins.net.gestionEnquete.controllers.demande;
 
-
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,23 +11,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.EtatDemandeDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.request.EtatDemandeRequestDTO;
-import sn.afrilins.net.gestionEnquete.services.interfaces.demande.EtatDemandeService;
+import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.ConcerneDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.request.ConcerneRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.interfaces.demande.ConcerneService;
 
 import javax.validation.Valid;
 
-@Hidden
 @RestController
-@RequestMapping("/v1/api/etat/demande")
-@Tag(name = "/v1/api/etat/demande", description = "etatDemande, controllers")
+@RequestMapping("/v1/api/concerne")
+@Tag(name = "/v1/api/concerne", description = "concerne, controllers")
 @RequiredArgsConstructor
 @Slf4j
-public class EtatDemandeRessource {
+public class ConcerneRessource {
 
-    private final EtatDemandeService etatDemandeService;
+    private final ConcerneService concerneService;
 
-    @Operation(summary = "Création d'un état de demande", description = "Crée un nouvel état de demande")
+    @Operation(summary = "Création d'un concerné", description = "Crée un nouveau concerné")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Création réussie"),
             @ApiResponse(responseCode = "400", description = "Requête invalide"),
@@ -37,12 +35,11 @@ public class EtatDemandeRessource {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EtatDemandeDTO createEtatDemande(@Valid @RequestBody EtatDemandeRequestDTO etatDemande) {
-        return etatDemandeService.createEtatDemande(etatDemande);
+    public ConcerneDTO createConcerne(@Valid @RequestBody ConcerneRequestDTO concerne) {
+        return concerneService.createConcerne(concerne);
     }
 
-
-    @Operation(summary = "Modification d'un état de demande", description = "Met à jour un état de demande existant")
+    @Operation(summary = "Modification d'un concerné", description = "Met à jour un concerné existant")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Modification réussie"),
             @ApiResponse(responseCode = "400", description = "Requête invalide"),
@@ -52,41 +49,42 @@ public class EtatDemandeRessource {
     })
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EtatDemandeDTO updateEtatDemande(
-            @Parameter(description = "Identifiant de l'état de demande", required = true)
+    public ConcerneDTO updateConcerne(
+            @Parameter(description = "Identifiant du concerné", required = true)
             @PathVariable Long id,
-            @Valid @RequestBody EtatDemandeDTO etatDemande) {
-        etatDemande.setId(id);
-        return etatDemandeService.updateEtatDemande(etatDemande);
+            @Valid @RequestBody ConcerneDTO concerne) {
+        concerne.setId(id);
+        return concerneService.updateConcerne(concerne);
     }
 
-
-    @Operation(summary = "Liste des états de demande", description = "Retourne la liste paginée des états de demande")
+    @Operation(summary = "Liste des concernés", description = "Retourne la liste paginée des concernés")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Succès"),
             @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
-    @GetMapping("all")
+    @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public Page<EtatDemandeDTO> readEtatDemandes(Pageable pageable) {
-        return etatDemandeService.readAllEtatDemandes(pageable);
+    public Page<ConcerneDTO> readConcernes(
+            @RequestParam(required = false) TypeConcerne type,
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String regionSocial,
+            Pageable pageable) {
+        return concerneService.readAllConcernes(type, numero, regionSocial, pageable);
     }
 
-
-    @Operation(summary = "Rechercher un état de demande par ID", description = "Retourne un état de demande à partir de son identifiant")
+    @Operation(summary = "Rechercher un concerné par ID", description = "Retourne un concerné à partir de son identifiant")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "État trouvé"),
+            @ApiResponse(responseCode = "200", description = "Concerné trouvé"),
             @ApiResponse(responseCode = "403", description = "Accès interdit"),
             @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EtatDemandeDTO findEtatDemandeById(@PathVariable Long id) {
-        return etatDemandeService.findEtatDemandeById(id);
+    public ConcerneDTO findConcerneById(@PathVariable Long id) {
+        return concerneService.findConcerneById(id);
     }
 
-
-    @Operation(summary = "Suppression d'un état de demande", description = "Supprime un état de demande par ID")
+    @Operation(summary = "Suppression d'un concerné", description = "Supprime un concerné par ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Supprimé avec succès"),
             @ApiResponse(responseCode = "400", description = "Requête invalide"),
@@ -95,10 +93,9 @@ public class EtatDemandeRessource {
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteEtatDemande(
-            @Parameter(description = "Identifiant de l'état de demande")
+    public void deleteConcerne(
+            @Parameter(description = "Identifiant du concerné")
             @PathVariable Long id) {
-        etatDemandeService.deleteEtatDemande(id);
+        concerneService.deleteConcerne(id);
     }
-
 }
