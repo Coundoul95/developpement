@@ -13,7 +13,9 @@ import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentViewUrlDT
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.DocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
+import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocumentService;
 import sn.afrilins.net.gestionEnquete.util.AppUtils;
+import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,11 +29,15 @@ import java.util.UUID;
 public class DocumentStorageServiceImpl implements DocumentStorageService {
 
     private final DocumentService documentService;
+    private  final TypeDocumentService typeDocumentService;
+
     @Value("${app.documents.storage.path}")
     private String documentsStoragePath;
 
     @Value("${app.api.base-path}")
     private String apiBasePath;
+
+    static final String ENTITY = "document";
 
     @Override
     public DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId) {
@@ -59,6 +65,13 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
                 .build();
 
         return documentService.createDocument(request);
+    }
+
+    @Override
+    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType) {
+        ValidationUtils.requireNonBlank(codeType, "codeType", ENTITY);
+        var type = typeDocumentService.findTypeDocumentByCode(codeType);
+        return handleUpload(file, nom, description, type.getId());
     }
 
     @Override

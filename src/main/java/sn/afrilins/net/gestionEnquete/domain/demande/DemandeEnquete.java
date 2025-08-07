@@ -13,6 +13,7 @@ import sn.afrilins.net.gestionEnquete.domain.audit.AbstractAuditingEntity;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
+import sn.afrilins.net.gestionEnquete.util.ReferenceGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -62,6 +63,9 @@ public class DemandeEnquete  {
     @Column(name = "date_echeance")
     LocalDateTime dateEcheance;
 
+    @Column(name = "reference", nullable = false, unique = true)
+    String reference ;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "concerne_id", nullable = false)
     @JsonIgnoreProperties("demandeEnquetes")
@@ -77,16 +81,13 @@ public class DemandeEnquete  {
     @JsonIgnoreProperties("demandeEnquetes")
     Utilisateur utilisateur;
 
-//    @OneToMany(mappedBy = "demandeEnquete")
-//    @JsonIgnoreProperties("demandeEnquete")
-//    List<Document> documents = new ArrayList<>();
+
     @OneToMany(mappedBy = "demandeEnquete", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Document> documents = new ArrayList<>();
 
     @OneToOne(mappedBy = "demandeEnquete", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JsonIgnoreProperties("demandeEnquete")
     Enquete enquete;
-
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -99,4 +100,11 @@ public class DemandeEnquete  {
     @Version
     @Column(name = "version")
     Long version;
+
+    @PrePersist
+    public void prePersist() {
+        if (reference == null || reference.isEmpty()) {
+            reference = ReferenceGenerator.generateReference("DEM");
+        }
+    }
 }

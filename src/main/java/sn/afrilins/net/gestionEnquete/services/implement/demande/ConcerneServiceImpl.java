@@ -34,7 +34,7 @@ public class ConcerneServiceImpl implements ConcerneService {
 
     @Override
     public ConcerneDTO createConcerne(ConcerneRequestDTO dto) {
-
+        log.info("Creating new Concerne: {}", dto);
         ValidationUtils.requireNonNull(dto.getType(), "type", ENTITY);
         ValidationUtils.requireNonBlank(dto.getNumero(), "numero", ENTITY);
         ValidationUtils.requireNonBlank(dto.getRegionSocial(), "regionSocial", ENTITY);

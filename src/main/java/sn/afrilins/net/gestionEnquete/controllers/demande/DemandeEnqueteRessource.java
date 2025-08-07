@@ -1,6 +1,9 @@
 package sn.afrilins.net.gestionEnquete.controllers.demande;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,7 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.DemandeEnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteUpdateRequestDTO;
@@ -38,6 +45,29 @@ public class DemandeEnqueteRessource {
         return demandeEnqueteService.createDemandeEnquete(dto);
     }
 
+    @PostMapping(value = "/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Créer une nouvelle demande d'enquête avec documents", description = "Crée une nouvelle demande d'enquête et enregistre les fichiers joints")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Création réussie"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+//    public DemandeEnqueteDTO createDemandeAvecDocuments(
+//            @RequestPart("demande") @Valid DemandeEnqueteRequestDTO dto,
+//            @RequestPart(name = "documents", required = false) MultipartFile[] documents
+//    ) {
+//        return demandeEnqueteService.createDemandeEnqueteAvecDocuments(dto, documents);
+//    }
+    public DemandeEnqueteDTO createDemandeAvecDocuments(
+            @RequestPart(value = "demande", required = true)
+            @Valid @RequestBody DemandeEnqueteRequestDTO dto,
+            @RequestPart(name = "documents", required = false) MultipartFile[] documents
+    ) {
+        return demandeEnqueteService.createDemandeEnqueteAvecDocuments(dto, documents);
+    }
+
+
     @Operation(summary = "Modifier une demande d'enquête", description = "Met à jour une demande d'enquête existante")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Modification réussie"),
@@ -60,8 +90,26 @@ public class DemandeEnqueteRessource {
     })
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public Page<DemandeEnqueteDTO> listDemandes(Pageable pageable) {
-        return demandeEnqueteService.findAllDemandeEnquete(pageable);
+    public Page<DemandeEnqueteDTO> listDemandes(
+            Pageable pageable,
+            @Parameter(description = "Identifiant de l'utilisateur")
+            @RequestParam(required = false) Long utilisateurId,
+            @Parameter(description = "L'urgence de la demande")
+            @RequestParam(required = false) Boolean urgent,
+            @Parameter(description = "L'objet de la demande")
+            @RequestParam(required = false) String objet,
+            @Parameter(description = "Le type de concerne de la demanade: (employeur, beneficiaire, travailleur)")
+            @RequestParam(required = false) String type,
+            @Parameter(description = "Le code de l'état")
+            @RequestParam(required = false) String etat,
+            @Parameter(description = "Le code de l'état l'enquête si la demande est validé")
+            @RequestParam(required = false) String etatEnquete,
+            @Parameter(description = "La priorité de la demande")
+            @RequestParam(required = false) Integer priorite,
+            @Parameter(description = "Terme de recherche global (nom, fiabilité, etc.)")
+            @RequestParam(required = false) String search
+            ) {
+        return demandeEnqueteService.findAllDemandeEnquete(utilisateurId, urgent, objet, type, etat,etatEnquete, priorite, search, pageable);
     }
 
     @Operation(summary = "Récupérer une demande d'enquête par ID", description = "Retourne une demande d'enquête via son identifiant")

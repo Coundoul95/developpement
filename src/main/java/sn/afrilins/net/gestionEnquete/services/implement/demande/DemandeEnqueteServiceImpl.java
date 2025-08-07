@@ -8,32 +8,43 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.demande.Concerne;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
+import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.demande.ConcerneRepository;
 import sn.afrilins.net.gestionEnquete.repository.demande.DemandeEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.demande.EtatDemandeRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.DocumentRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.TypeDocumentRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.DemandeEnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteUpdateRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.interfaces.demande.ConcerneService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.demande.DemandeEnqueteService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
+import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentService;
+import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
+import sn.afrilins.net.gestionEnquete.services.mapper.demande.ConcerneMapper;
 import sn.afrilins.net.gestionEnquete.services.mapper.demande.DemandeEnqueteMapper;
+import sn.afrilins.net.gestionEnquete.services.mapper.parametrage.DocumentMapper;
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+
 
 @Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Transactional
 public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
 
     final DemandeEnqueteRepository demandeEnqueteRepository;
@@ -42,22 +53,43 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
     final UtilisateurRepository utilisateurRepository;
     final DemandeEnqueteMapper demandeEnqueteMapper;
     final EnqueteService enqueteService;
+    final ConcerneService concerneService;
+    final ConcerneMapper concerneMapper;
+    final DocumentRepository documentRepository;
+    final DocumentStorageService documentStorageService;
+    final DocumentMapper documentMapper;
+    final TypeDocumentRepository typeDocumentRepository;
 
     static final String ENTITY = "demande_enquete";
+    static final String ETAT_EN_ATTENTE = "00";
+    static final String ETAT_VALIDEE = "01";
+    static final String ETAT_ANNULEE = "02";
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DemandeEnqueteDTO createDemandeEnquete(DemandeEnqueteRequestDTO dto) {
+        log.info("Creating DemandeEnquete for user: {}", dto.getUtilisateurId());
+
         validateDemande(dto);
 
-        var concerne = getConcerneOrThrow(dto.getConcerneId());
-        var utilisateur = getUtilisateurOrThrow(dto.getUtilisateurId());
-        var etat = etatDemandeRepository.findFirstByCode("00")
-                .orElseGet(() -> etatDemandeRepository.save(EtatDemande.builder().code("00").libelle("En attente").build()));
+        Utilisateur utilisateur = getUtilisateurOrThrow(dto.getUtilisateurId());
 
-        var entity = DemandeEnquete.builder()
+        Concerne concerne = resolveConcerne(dto);
+
+        EtatDemande etat = etatDemandeRepository.findFirstByCode(ETAT_EN_ATTENTE)
+                .orElseGet(() -> {
+                    log.info("Etat '{}' not found. Creating new one.", ETAT_EN_ATTENTE);
+                    return etatDemandeRepository.save(EtatDemande.builder()
+                            .code(ETAT_EN_ATTENTE)
+                            .libelle("En attente")
+                            .build());
+                });
+
+        DemandeEnquete entity = DemandeEnquete.builder()
                 .description(dto.getDescription())
                 .etat(etat)
                 .urgent(dto.getUrgent())
+                .priorite(dto.getPriorite())
                 .dateEcheance(dto.getDateEcheance())
                 .utilisateur(utilisateur)
                 .objet(dto.getObjet())
@@ -68,9 +100,10 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DemandeEnqueteDTO updateDemandeEnquete(Long id, DemandeEnqueteUpdateRequestDTO dto) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
-        var entity = getDemandeOrThrow(id);
+        DemandeEnquete entity = getDemandeOrThrow(id);
 
         dto.getObjet().ifPresent(obj -> {
             ValidationUtils.requireNonBlank(obj, "objet", ENTITY);
@@ -95,29 +128,15 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
             entity.setConcerne(getConcerneOrThrow(concerneId));
         });
 
-        dto.getEtatCode().ifPresent(etatCode->{
-            ValidationUtils.requireNonBlank(etatCode, "etatCode", ENTITY);
+        dto.getEtatCode().ifPresent(code -> updateEtat(entity, code));
 
-            if(Objects.equals(entity.getEtat().getCode(), "01") || Objects.equals(entity.getEtat().getCode(), "02")){
-                throw new CustomBadRequestException(new BadRequestAlertException("impossible de changer l'état",ENTITY,"etatCode"));
-            }
-            entity.setDateAnnulation(null);
-            entity.setDateValidation(null);
-            if(etatCode.equals("01")){
-                entity.setDateValidation(LocalDateTime.now());
-            }
-            if(etatCode.equals("02")){
-                entity.setDateAnnulation(LocalDateTime.now());
-            }
-            entity.setEtat(getEtatOrThrow(etatCode));
-        });
+        DemandeEnquete entitySaved = demandeEnqueteRepository.save(entity);
 
-        var entitySave = demandeEnqueteRepository.save(entity);
-        if(Objects.equals(entitySave.getEtat().getCode(), "01")){
-            enqueteService.createEnquete(entitySave.getId());
+        if (ETAT_VALIDEE.equals(entitySaved.getEtat().getCode())) {
+            enqueteService.createEnquete(entitySaved.getId());
         }
 
-        return demandeEnqueteMapper.toDto(entitySave);
+        return demandeEnqueteMapper.toDto(entitySaved);
     }
 
     @Override
@@ -134,34 +153,104 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
     }
 
     @Override
-    public Page<DemandeEnqueteDTO> findAllDemandeEnquete(Pageable pageable) {
-        return demandeEnqueteRepository.findAll(pageable).map(demandeEnqueteMapper::toDto);
+    public Page<DemandeEnqueteDTO> findAllDemandeEnquete(Long utilisateurId, Boolean urgent, String objet, String type, String etat, String etatEnquete, Integer priorite, String search, Pageable pageable) {
+        return demandeEnqueteRepository.findAllDemandeEnquete(utilisateurId,urgent, objet, type, etat, etatEnquete, priorite, search, pageable).map(demandeEnqueteMapper::toDto) ;
     }
 
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DemandeEnqueteDTO changerEtatDemandeEnquete(Long demandeId, String nouvelEtatCode) {
         ValidationUtils.requirePositiveId(demandeId, "demande_id", ENTITY);
         ValidationUtils.requireNonBlank(nouvelEtatCode, "etat", ENTITY);
         ValidationUtils.requireMinLength(nouvelEtatCode, 2, "etat", ENTITY);
 
-        var demande = getDemandeOrThrow(demandeId);
+        DemandeEnquete demande = getDemandeOrThrow(demandeId);
 
-        if(Objects.equals(demande.getEtat().getCode(), "01" ) || Objects.equals(demande.getEtat().getCode(), "02")){
-            throw new  CustomBadRequestException(
-                    new BadRequestAlertException("impossible de change l'état", ENTITY, "etatCode")
-            );
+        if (ETAT_VALIDEE.equals(demande.getEtat().getCode()) || ETAT_ANNULEE.equals(demande.getEtat().getCode())) {
+            throw new CustomBadRequestException(new BadRequestAlertException("Impossible de changer l'état", ENTITY, "etatCode"));
         }
-        var etat = etatDemandeRepository.findFirstByCode(nouvelEtatCode)
-                .orElseThrow(() -> new CustomBadRequestException(
-                        new BadRequestAlertException("etat_introuvable", ENTITY, "etat_inexistant")));
 
-        demande.setEtat(etat);
-        var entitySave = demandeEnqueteRepository.save(demande);
-        if(Objects.equals(entitySave.getEtat().getCode(), "01") && Objects.isNull(entitySave.getEnquete())){
-                enqueteService.createEnquete(entitySave.getId());
-                entitySave = demandeEnqueteRepository.getById(entitySave.getId());
+        updateEtat(demande, nouvelEtatCode);
+
+        var entitySaved = demandeEnqueteRepository.save(demande);
+
+        if (ETAT_VALIDEE.equals(entitySaved.getEtat().getCode()) && entitySaved.getEnquete() == null) {
+            enqueteService.createEnquete(entitySaved.getId());
+            entitySaved = demandeEnqueteRepository.getById(entitySaved.getId());
         }
-        return demandeEnqueteMapper.toDto(entitySave);
+
+        return demandeEnqueteMapper.toDto(entitySaved);
+    }
+
+    @Override
+    public DemandeEnqueteDTO createDemandeEnqueteAvecDocuments(DemandeEnqueteRequestDTO dto, MultipartFile[] files) {
+
+        var demandeDto = createDemandeEnquete(dto);
+        var entity = demandeEnqueteRepository.getById((demandeDto.getId()));
+
+        var type = typeDocumentRepository.findFirstByCode("00")
+                .orElseGet(() -> {
+                    log.info("Type document '00' not found. Creating new one.");
+                    return typeDocumentRepository.save(TypeDocument.builder()
+                            .code(ETAT_EN_ATTENTE)
+                            .libelle("Piéce joint demande enquête")
+                            .build());
+                });
+
+        // Gérer l’upload des fichiers s’ils existent
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                // Appeler la méthode existante
+                DocumentDTO uploadedDoc = documentStorageService.handleUpload(
+                        file,
+                        file.getOriginalFilename(),
+                        null,
+                        type.getCode()
+                );
+
+                // Mapper DTO → entité
+                Document docEntity = documentMapper.toEntity(uploadedDoc);
+
+                // Associer la demande à ce document
+                docEntity.setDemandeEnquete(entity);
+
+                // Sauvegarder l'entité
+                documentRepository.save(docEntity);
+            }
+        }
+
+        return demandeDto;
+    }
+
+    // ====================== Méthodes privées ==============================
+
+    private Concerne resolveConcerne(DemandeEnqueteRequestDTO dto) {
+        if (dto.getConcerneId() != null) {
+            return getConcerneOrThrow(dto.getConcerneId());
+        } else if (dto.getConcerne() != null) {
+            return concerneMapper.toEntity(concerneService.createConcerne(dto.getConcerne()));
+        } else {
+            throw new CustomBadRequestException(new BadRequestAlertException(
+                    "Vous devez fournir soit un concerneId soit un concerne.", ENTITY, "concerne"));
+        }
+    }
+
+    private void updateEtat(DemandeEnquete entity, String etatCode) {
+        if (ETAT_VALIDEE.equals(entity.getEtat().getCode()) || ETAT_ANNULEE.equals(entity.getEtat().getCode())) {
+            throw new CustomBadRequestException(new BadRequestAlertException("État non modifiable", ENTITY, "etatCode"));
+        }
+
+        EtatDemande etat = getEtatOrThrow(etatCode);
+        entity.setEtat(etat);
+        entity.setDateAnnulation(null);
+        entity.setDateValidation(null);
+
+        if (ETAT_VALIDEE.equals(etatCode)) {
+            entity.setDateValidation(LocalDateTime.now());
+        } else if (ETAT_ANNULEE.equals(etatCode)) {
+            entity.setDateAnnulation(LocalDateTime.now());
+        }
     }
 
     private void validateDemande(DemandeEnqueteRequestDTO dto) {
@@ -169,10 +258,16 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
         ValidationUtils.requireMinLength(dto.getObjet(), 3, "objet", ENTITY);
         ValidationUtils.requireInRange(dto.getPriorite(), 1, 5, "priorite", ENTITY);
         ValidationUtils.requireNonNull(dto.getDateEcheance(), "date_echeance", ENTITY);
-        ValidationUtils.requireNonNull(dto.getConcerneId(), "concerne_id", ENTITY);
         ValidationUtils.requireNonNull(dto.getUtilisateurId(), "utilisateur_id", ENTITY);
-    }
 
+        if (dto.getConcerneId() != null && dto.getConcerne() != null) {
+            throw new CustomBadRequestException(new BadRequestAlertException("Fournir soit concerneId soit concerne, pas les deux.", ENTITY, "concerne"));
+        }
+
+        if (dto.getConcerneId() == null && dto.getConcerne() == null) {
+            throw new CustomBadRequestException(new BadRequestAlertException("concerne requis", ENTITY, "concerne"));
+        }
+    }
 
     private DemandeEnquete getDemandeOrThrow(Long id) {
         return demandeEnqueteRepository.findById(id)

@@ -8,8 +8,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.DocumentRequestDTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SuperBuilder(toBuilder = true)
 @Data
@@ -37,6 +39,13 @@ public class DemandeEnqueteRequestDTO {
     @Schema(name = "concerneId", description = "Le concerné")
     Long concerneId;
 
+    @Schema(name = "concerne", description = "Le concerné à créer s'il n'existe pas déjà")
+    ConcerneRequestDTO concerne;
+
     @Schema(name = "utilisateurId", description = "L'utilisateur")
     Long utilisateurId;
+//
+//    @Schema(description = "Liste des documents liés à la demande")
+//    List<DocumentRequestDTO> documents;
+
 }

@@ -23,6 +23,8 @@ public interface DocumentStorageService {
      */
     DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId);
 
+    DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType);
+
     /**
      * Récupère la ressource (fichier) correspondant à un document.
      *

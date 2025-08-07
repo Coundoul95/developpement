@@ -2,7 +2,10 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.DemandeEnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
+
+import java.time.LocalDateTime;
 
 public interface EnqueteService {
 
@@ -43,6 +46,15 @@ public interface EnqueteService {
      * @param pageable les informations de pagination
      * @return une page de conclusions
      */
-    Page<EnqueteDTO> readAllEnquete(Pageable pageable);
+    Page<EnqueteDTO> readAllEnquete(String etatCode, Integer progression, LocalDateTime dateDebut, LocalDateTime dateFin, Pageable pageable);
+
+    /**
+     * Change l’état d’une demande d’enquête.
+     *
+     * @param demandeId l’identifiant de la demande
+     * @param nouvelEtat le nouvel état (enum ou String selon ton choix)
+     * @return la demande mise à jour
+     */
+    EnqueteDTO changerEtatEnquete(Long demandeId, String nouvelEtat);
 
 }

@@ -109,6 +109,16 @@ public class TypeDocumentServiceImpl implements TypeDocumentService {
     }
 
     @Override
+    public TypeDocumentDTO findTypeDocumentByCode(String code) {
+        ValidationUtils.requireNonBlank(code, "code", ENTITY);
+        ValidationUtils.requireMinLength(code, 2,"code", ENTITY);
+        return typeDocumentRepository.findFirstByCode(code)
+                .map(typeDocumentMapper::toDto)
+                .orElseThrow( () ->new CustomBadRequestException(
+                        new BadRequestAlertException("type_document_introuvable", ENTITY, "code_inexistant")));
+    }
+
+    @Override
     public Page<TypeDocumentDTO> readAllTypeDocument(String code, String libelle, Pageable pageable) {
         return typeDocumentRepository.findAllTypeDocument(code, libelle, pageable)
                 .map(typeDocumentMapper::toDto);

@@ -41,6 +41,8 @@ public interface TypeDocumentService {
      */
     TypeDocumentDTO findTypeDocumentById(Long id);
 
+    TypeDocumentDTO findTypeDocumentByCode(String code);
+
     /**
      * Récupère une page paginée des types de document.
      *

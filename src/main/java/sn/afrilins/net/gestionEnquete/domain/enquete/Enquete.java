@@ -39,6 +39,12 @@ public class Enquete {
     @Column(name = "date_fin")
     LocalDateTime dateFin;
 
+    @Column(name = "date_validation")
+    LocalDateTime dateValidation;
+
+    @Column(name = "date_annulation")
+    LocalDateTime dateAnnulation;
+
     @Column(name = "progression", nullable = false)
     @Builder.Default
     int progression = 0;

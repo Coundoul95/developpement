@@ -38,6 +38,9 @@ public class DemandeEnqueteDTO {
     @Schema(name = "priorite", description = "La priorité")
     int priorite;
 
+    @Schema(description = "La référence")
+    String reference;
+
     @Schema(name = "dateEcheance", description = "La date écheance")
     LocalDateTime dateEcheance;
 
@@ -58,5 +61,11 @@ public class DemandeEnqueteDTO {
 
     @Schema(name = "utilisateur", description = "L'utilisateur")
     UtilisateurDTO utilisateur;
+
+    @Schema(name = "createdAt", description = "La date de création")
+    LocalDateTime createdAt;
+
+    @Schema(name = "updatedAt", description = "La date de mis à jour")
+    LocalDateTime updatedAt;
 
 }
