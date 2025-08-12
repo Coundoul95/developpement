@@ -29,9 +29,9 @@ public class ConcerneRessource {
 
     @Operation(summary = "Création d'un concerné", description = "Crée un nouveau concerné")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Création réussie"),
-            @ApiResponse(responseCode = "400", description = "Requête invalide"),
-            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+        @ApiResponse(responseCode = "201", description = "Création réussie"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide"),
+        @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,11 +41,11 @@ public class ConcerneRessource {
 
     @Operation(summary = "Modification d'un concerné", description = "Met à jour un concerné existant")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Modification réussie"),
-            @ApiResponse(responseCode = "400", description = "Requête invalide"),
-            @ApiResponse(responseCode = "404", description = "Ressource introuvable"),
-            @ApiResponse(responseCode = "401", description = "Non autorisé"),
-            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+        @ApiResponse(responseCode = "200", description = "Modification réussie"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide"),
+        @ApiResponse(responseCode = "404", description = "Ressource introuvable"),
+        @ApiResponse(responseCode = "401", description = "Non autorisé"),
+        @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -59,8 +59,8 @@ public class ConcerneRessource {
 
     @Operation(summary = "Liste des concernés", description = "Retourne la liste paginée des concernés")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Succès"),
-            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+        @ApiResponse(responseCode = "200", description = "Succès"),
+        @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
@@ -74,9 +74,9 @@ public class ConcerneRessource {
 
     @Operation(summary = "Rechercher un concerné par ID", description = "Retourne un concerné à partir de son identifiant")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Concerné trouvé"),
-            @ApiResponse(responseCode = "403", description = "Accès interdit"),
-            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+        @ApiResponse(responseCode = "200", description = "Concerné trouvé"),
+        @ApiResponse(responseCode = "403", description = "Accès interdit"),
+        @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -86,10 +86,10 @@ public class ConcerneRessource {
 
     @Operation(summary = "Suppression d'un concerné", description = "Supprime un concerné par ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Supprimé avec succès"),
-            @ApiResponse(responseCode = "400", description = "Requête invalide"),
-            @ApiResponse(responseCode = "404", description = "Ressource non trouvée"),
-            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+        @ApiResponse(responseCode = "204", description = "Supprimé avec succès"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide"),
+        @ApiResponse(responseCode = "404", description = "Ressource non trouvée"),
+        @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -37,6 +37,12 @@ public class EnqueteDTO {
     @Schema(description = "La date de fin")
     LocalDateTime dateFin;
 
+    @Schema(description = "La date de validation")
+    LocalDateTime dateValidation;
+
+    @Schema(description = "La date d'annulation ")
+    LocalDateTime dateAnnulation;
+
     @Schema(description = "La date de création")
     LocalDateTime createdAt;
 

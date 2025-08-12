@@ -57,4 +57,5 @@ public interface EnqueteService {
      */
     EnqueteDTO changerEtatEnquete(Long demandeId, String nouvelEtat);
 
+    EnqueteDTO updateProgression(Long enqueteId, int progression);
 }

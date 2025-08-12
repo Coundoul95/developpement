@@ -85,13 +85,32 @@ public class EnqueteServiceImpl implements EnqueteService {
 
     @Override
     public EnqueteDTO changerEtatEnquete(Long enqueteId, String nouvelEtatCode) {
-        ValidationUtils.requirePositiveId(enqueteId, "demande_id", ENTITY);
+        ValidationUtils.requirePositiveId(enqueteId, "enquete_id", ENTITY);
         ValidationUtils.requireNonBlank(nouvelEtatCode, "etat", ENTITY);
         ValidationUtils.requireMinLength(nouvelEtatCode, 2, "etat", ENTITY);
         var enquete = getEnqueteOrThrow(enqueteId);
         updateEtat(enquete, nouvelEtatCode);
         return enqueteMapper.toDto(enqueteRepository.save(enquete));
     }
+
+    @Override
+    public EnqueteDTO updateProgression(Long enqueteId, int progression) {
+        ValidationUtils.requirePositiveId(enqueteId, "enquete_id", ENTITY);
+        ValidationUtils.requireInRange(progression,0, 100, "progression", ENTITY);
+
+        var enquete = getEnqueteOrThrow(enqueteId);
+
+        if(!Objects.equals(enquete.getEtat().getCode(), ETAT_EN_COURS)){
+            throw new CustomBadRequestException(new BadRequestAlertException(
+                    "On ne peut que modifier la progression des enquêtes en cours",
+                    ENTITY, "progession"));
+        }
+        enquete.setProgression(progression);
+        enqueteRepository.save(enquete);
+
+        return enqueteMapper.toDto(enquete);
+    }
+
 
 
     private void updateEtat(Enquete entity, String etatCode) {
@@ -116,12 +135,14 @@ public class EnqueteServiceImpl implements EnqueteService {
         switch (etatCode) {
             case ETAT_VALIDEE:
                 entity.setDateValidation(LocalDateTime.now());
+                entity.setProgression(100);
                 break;
             case ETAT_ANNULEE:
                 entity.setDateAnnulation(LocalDateTime.now());
                 break;
             case ETAT_TERMINEE:
                 entity.setDateFin(LocalDateTime.now());
+                entity.setProgression(100);
                 break;
             case ETAT_EN_COURS:
                 entity.setDateDebut(LocalDateTime.now());

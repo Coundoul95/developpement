@@ -102,13 +102,30 @@ public class EnqueteRessource {
             @ApiResponse(responseCode = "404", description = "Enquête ou état non trouvé"),
             @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
-    @PatchMapping("/{demandeId}/etat")
+    @PatchMapping("/{enqueteId}/etat")
     @ResponseStatus(HttpStatus.OK)
     public EnqueteDTO changerEtatEnquete(
-            @PathVariable Long demandeId,
+            @PathVariable Long enqueteId,
             @RequestParam("code") String nouvelEtatCode) {
-        log.info("Changement d'état de l'enquête liée à la demande ID {} en état {}", demandeId, nouvelEtatCode);
-        return enqueteService.changerEtatEnquete(demandeId, nouvelEtatCode);
+        log.info("Changement d'état de l'enquête liée à la demande ID {} en état {}", enqueteId, nouvelEtatCode);
+        return enqueteService.changerEtatEnquete(enqueteId, nouvelEtatCode);
     }
+
+    @Operation(summary = "Mettre à jour la progression d'une enquête", description = "Met à jour uniquement la progression d'une enquête via son ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Mise à jour réussie"),
+            @ApiResponse(responseCode = "400", description = "Valeur de progression invalide"),
+            @ApiResponse(responseCode = "404", description = "Enquête non trouvée"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @PatchMapping("/{enqueteId}/progression")
+    @ResponseStatus(HttpStatus.OK)
+    public EnqueteDTO updateProgression(
+            @PathVariable Long enqueteId,
+            @RequestParam("progression") int progression) {
+        log.info("Mise à jour de la progression de l'enquête ID {} à {}%", enqueteId, progression);
+        return enqueteService.updateProgression(enqueteId, progression);
+    }
+
 
 }

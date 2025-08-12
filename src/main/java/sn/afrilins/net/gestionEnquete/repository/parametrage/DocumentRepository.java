@@ -40,14 +40,4 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, Query
         return findAll(builder, pageable);
     }
 
-//    default Page<Document> findAllByUtilisateurAndWithoutSourceInfo(Long utilisateurId, Pageable pageable) {
-//        QDocument doc = QDocument.document;
-//        BooleanBuilder builder = new BooleanBuilder();
-//
-//        builder.and(doc.utilisateur.id.eq(utilisateurId));
-//        builder.and(doc.sourceInfo.isNull());
-//
-//        return findAll(builder, pageable);x
-//    }
-
 }

@@ -198,10 +198,8 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
                             .build());
                 });
 
-        // Gérer l’upload des fichiers s’ils existent
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
-                // Appeler la méthode existante
                 DocumentDTO uploadedDoc = documentStorageService.handleUpload(
                         file,
                         file.getOriginalFilename(),
@@ -209,13 +207,8 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
                         type.getCode()
                 );
 
-                // Mapper DTO → entité
                 Document docEntity = documentMapper.toEntity(uploadedDoc);
-
-                // Associer la demande à ce document
                 docEntity.setDemandeEnquete(entity);
-
-                // Sauvegarder l'entité
                 documentRepository.save(docEntity);
             }
         }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,7 +48,7 @@ public class DemandeEnqueteRessource {
         return demandeEnqueteService.createDemandeEnquete(dto);
     }
 
-    @PostMapping(value = "/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/document1", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Créer une nouvelle demande d'enquête avec documents", description = "Crée une nouvelle demande d'enquête et enregistre les fichiers joints")
     @ApiResponses({
@@ -59,13 +62,32 @@ public class DemandeEnqueteRessource {
 //    ) {
 //        return demandeEnqueteService.createDemandeEnqueteAvecDocuments(dto, documents);
 //    }
-    public DemandeEnqueteDTO createDemandeAvecDocuments(
+    public DemandeEnqueteDTO createDemandeAvecDocuments1(
             @RequestPart(value = "demande", required = true)
             @Valid @RequestBody DemandeEnqueteRequestDTO dto,
             @RequestPart(name = "documents", required = false) MultipartFile[] documents
     ) {
         return demandeEnqueteService.createDemandeEnqueteAvecDocuments(dto, documents);
     }
+
+
+    @PostMapping(value = "/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Créer une nouvelle demande d'enquête avec documents", description = "Crée une nouvelle demande d'enquête et enregistre les fichiers joints")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Création réussie"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    public DemandeEnqueteDTO createDemandeAvecDocuments(
+            
+            @RequestPart(value = "demande", required = true) @Valid DemandeEnqueteRequestDTO dto, // @RequestBody a été supprimé
+            @RequestPart(name = "documents", required = false) MultipartFile[] documents
+    ) {
+        return demandeEnqueteService.createDemandeEnqueteAvecDocuments(dto, documents);
+    }
+
+
 
 
     @Operation(summary = "Modifier une demande d'enquête", description = "Met à jour une demande d'enquête existante")
