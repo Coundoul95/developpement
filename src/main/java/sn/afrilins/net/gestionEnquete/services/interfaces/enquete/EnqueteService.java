@@ -2,7 +2,9 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.DemandeEnqueteDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
 
 import java.time.LocalDateTime;
@@ -38,7 +40,7 @@ public interface EnqueteService {
      * @param id l’identifiant de la conclusion
      * @return la enquete trouvée
      */
-    EnqueteDTO findEnqueteById(Long id);
+    EnqueteAvecDemandeDTO findEnqueteById(Long id);
 
     /**
      * Récupère une page de conclusions.
@@ -46,7 +48,22 @@ public interface EnqueteService {
      * @param pageable les informations de pagination
      * @return une page de conclusions
      */
-    Page<EnqueteDTO> readAllEnquete(String etatCode, Integer progression, LocalDateTime dateDebut, LocalDateTime dateFin, Pageable pageable);
+    Page<EnqueteAvecDemandeDTO> readAllEnqueteAvecDemande(   String etatCode,
+                                                             Integer progression,
+                                                             LocalDateTime dateDebut,
+                                                             LocalDateTime dateFin,
+                                                             Boolean assignee,      // filtrer assignée/non assignée
+                                                             Long enqueteurId,      // filtrer par enquêteur
+                                                             Pageable pageable);
+
+    Page<EnqueteDTO> readAllEnqueteSansDemande(   String etatCode,
+                                                             Integer progression,
+                                                             LocalDateTime dateDebut,
+                                                             LocalDateTime dateFin,
+                                                             Boolean assignee,      // filtrer assignée/non assignée
+                                                             Long enqueteurId,      // filtrer par enquêteur
+                                                             Pageable pageable);
+
 
     /**
      * Change l’état d’une demande d’enquête.

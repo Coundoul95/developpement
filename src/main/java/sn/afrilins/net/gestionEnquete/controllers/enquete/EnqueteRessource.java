@@ -11,8 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
+import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteAvecDemandeMapper;
+import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteMapper;
 
 import java.time.LocalDateTime;
 
@@ -51,23 +55,101 @@ public class EnqueteRessource {
         return enqueteService.updateEnquete(dto);
     }
 
-    @Operation(summary = "Lister toutes les enquêtes", description = "Retourne la liste paginée des enquêtes")
+    @Operation(
+            summary = "Lister toutes les enquêtes",
+            description = "Retourne la liste paginée des enquêtes avec leur demande associée. "
+                    + "Possibilité de filtrer par état, progression, dates, assignation et enquêteur."
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Succès"),
             @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
-    @GetMapping("/all")
+    @GetMapping("/all/avec/demande")
     @ResponseStatus(HttpStatus.OK)
-    public Page<EnqueteDTO> listEnquetes(
+    public Page<EnqueteAvecDemandeDTO> listEnquetes(
             Pageable pageable,
-            @Parameter(description = "Le code de l'état") @RequestParam(required = false) String etatCode,
-            @Parameter(description = "La progression") @RequestParam(required = false) Integer progression,
-            @Parameter(description = "Le code de l'état") @RequestParam(required = false) LocalDateTime dateDebut,
-            @Parameter(description = "La progression") @RequestParam(required = false) LocalDateTime dateFin
+            @Parameter(description = "Le code de l'état")
+            @RequestParam(required = false) String etatCode,
+
+            @Parameter(description = "La progression")
+            @RequestParam(required = false) Integer progression,
+
+            @Parameter(description = "Date de début (format ISO-8601)")
+            @RequestParam(required = false) LocalDateTime dateDebut,
+
+            @Parameter(description = "Date de fin (format ISO-8601)")
+            @RequestParam(required = false) LocalDateTime dateFin,
+
+            @Parameter(description = "Filtrer par assignation (true = assignée, false = non assignée)")
+            @RequestParam(required = false) Boolean assignee,
+
+            @Parameter(description = "ID de l'enquêteur assigné")
+            @RequestParam(required = false) Long enqueteurId
     ) {
-        log.info("Récupération de la liste paginée des enquêtes");
-        return enqueteService.readAllEnquete(etatCode, progression, dateDebut, dateFin, pageable);
+        log.info("Récupération de la liste paginée des enquêtes avec filtres : "
+                        + "etatCode={}, progression={}, dateDebut={}, dateFin={}, assignee={}, enqueteurId={}",
+                etatCode, progression, dateDebut, dateFin, assignee, enqueteurId
+        );
+
+        return enqueteService.readAllEnqueteAvecDemande(
+                etatCode,
+                progression,
+                dateDebut,
+                dateFin,
+                assignee,
+                enqueteurId,
+                pageable
+        );
     }
+
+
+    @Operation(
+            summary = "Lister toutes les enquêtes",
+            description = "Retourne la liste paginée des enquêtes sans leur demande associée. "
+                    + "Possibilité de filtrer par état, progression, dates, assignation et enquêteur."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Succès"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @GetMapping("/all/sans/demande")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<EnqueteDTO> listEnquetesSansDemande(
+            Pageable pageable,
+            @Parameter(description = "Le code de l'état")
+            @RequestParam(required = false) String etatCode,
+
+            @Parameter(description = "La progression de l'enquête (0 à 100)")
+            @RequestParam(required = false) Integer progression,
+
+            @Parameter(description = "Date de début (format ISO-8601)")
+            @RequestParam(required = false) LocalDateTime dateDebut,
+
+            @Parameter(description = "Date de fin (format ISO-8601)")
+            @RequestParam(required = false) LocalDateTime dateFin,
+
+            @Parameter(description = "Filtrer par assignation (true = assignée, false = non assignée)")
+            @RequestParam(required = false) Boolean assignee,
+
+            @Parameter(description = "ID de l'enquêteur assigné")
+            @RequestParam(required = false) Long enqueteurId
+    ) {
+        log.info("Récupération de la liste paginée des enquêtes sans demande avec filtres : "
+                        + "etatCode={}, progression={}, dateDebut={}, dateFin={}, assignee={}, enqueteurId={}",
+                etatCode, progression, dateDebut, dateFin, assignee, enqueteurId
+        );
+
+        return enqueteService.readAllEnqueteSansDemande(
+                etatCode,
+                progression,
+                dateDebut,
+                dateFin,
+                assignee,
+                enqueteurId,
+                pageable
+        );
+    }
+
 
     @Operation(summary = "Récupérer une enquête par ID", description = "Retourne une enquête via son identifiant")
     @ApiResponses({
@@ -77,7 +159,7 @@ public class EnqueteRessource {
     })
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EnqueteDTO getEnqueteById(@PathVariable Long id) {
+    public EnqueteAvecDemandeDTO getEnqueteById(@PathVariable Long id) {
         log.info("Récupération de l'enquête ID {}", id);
         return enqueteService.findEnqueteById(id);
     }
@@ -94,6 +176,7 @@ public class EnqueteRessource {
         log.info("Suppression de l'enquête ID {}", id);
         enqueteService.deleteEnquete(id);
     }
+
 
     @Operation(summary = "Changer l'état d'une enquête", description = "Change l'état d'une enquête via son identifiant et un code d'état")
     @ApiResponses({

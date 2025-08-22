@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 import sn.afrilins.net.gestionEnquete.util.ReferenceGenerator;
 
 import javax.persistence.*;
@@ -25,6 +26,10 @@ import java.time.LocalDateTime;
 //@EntityListeners({AuditingEntityListener.class})
 @Table(name = "ENQUETE_ENQUETE")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@NamedEntityGraph(
+        name = "Enquete.demandeEnquete",
+        attributeNodes = @NamedAttributeNode("demandeEnquete")
+)
 public class Enquete {
 
     @Id
@@ -61,6 +66,11 @@ public class Enquete {
     @JoinColumn(name = "demande_enquete_id", nullable = false, unique = true)
     @JsonIgnoreProperties("enquete")
     DemandeEnquete demandeEnquete;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "enqueteur_id", nullable = true)
+    @JsonIgnoreProperties("enquetesAssignees")
+    Utilisateur enqueteur;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

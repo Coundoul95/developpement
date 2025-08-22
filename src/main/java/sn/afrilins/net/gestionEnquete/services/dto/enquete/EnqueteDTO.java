@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(name = "conclusion", description = "le modele conclusion")
+@Schema(name = "enquete", description = "Le modèle d'enquête sans sa demande associée")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EnqueteDTO {
 
@@ -31,19 +31,19 @@ public class EnqueteDTO {
     @Schema(description = "La progression")
     int progression;
 
-    @Schema(description = "La date de début")
+    @Schema(description = "La date de début", type = "string", format = "date-time", example = "2025-08-12T15:30:00")
     LocalDateTime dateDebut;
 
-    @Schema(description = "La date de fin")
+    @Schema(description = "La date de fin", type = "string", format = "date-time", example = "2025-08-12T15:30:00")
     LocalDateTime dateFin;
 
-    @Schema(description = "La date de validation")
+    @Schema(description = "La date de validation", type = "string", format = "date-time", example = "2025-08-12T15:30:00")
     LocalDateTime dateValidation;
 
-    @Schema(description = "La date d'annulation ")
+    @Schema(description = "La date d'annulation ", type = "string", format = "date-time", example = "2025-08-12T15:30:00")
     LocalDateTime dateAnnulation;
 
-    @Schema(description = "La date de création")
+    @Schema(description = "La date de création", type = "string", format = "date-time", example = "2025-08-12T15:30:00")
     LocalDateTime createdAt;
 
 }

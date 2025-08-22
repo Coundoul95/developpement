@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.DemandeEnqueteDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.request.ConcerneRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteUpdateRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.demande.DemandeEnqueteService;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/v1/api/demande/enquete")
@@ -69,6 +73,126 @@ public class DemandeEnqueteRessource {
     ) {
         return demandeEnqueteService.createDemandeEnqueteAvecDocuments(dto, documents);
     }
+
+//    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @Operation(summary = "Créer une nouvelle demande d'enquête avec documents",
+//            description = "Crée une nouvelle demande d'enquête et enregistre les fichiers joints")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "201", description = "Création réussie"),
+//            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+//            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+//    })
+//    public DemandeEnqueteDTO test(
+//            @RequestPart("files") MultipartFile[] files,
+//            @RequestParam("objet") String objet,
+//            @RequestParam("description") String description,
+//            @RequestParam("urgent") Boolean urgent,
+//            @RequestParam("priorite") int priorite,
+//            @RequestParam("utilisateurId") Long utilisateurId,
+//            @RequestParam(value = "concerneId", required = false) Long concerneId,
+////            @RequestPart(value = "concerne", required = false) ConcerneRequestDTO concerne,
+//            @RequestParam("dateEcheance")
+//            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//            LocalDateTime dateEcheance,
+//            @RequestPart(value = "concerne", required = false) String concerneJson
+//    ) {
+//        DemandeEnqueteRequestDTO demande = DemandeEnqueteRequestDTO.builder()
+//                .objet(objet)
+//                .urgent(urgent)
+//                .priorite(priorite)
+//                .description(description)
+//                .concerneId(concerneId)
+////                .concerne(concerne)
+//                .utilisateurId(utilisateurId)
+//                .build();
+//
+//        System.out.println(demande.toString());
+//        System.out.println(concerneJson);
+//        return null;
+//    }
+//
+
+//    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @Operation(
+//            summary = "Créer une nouvelle demande d'enquête avec documents",
+//            description = "Crée une nouvelle demande d'enquête et enregistre les fichiers joints"
+//    )
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "201", description = "Création réussie"),
+//            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+//            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+//    })
+//    public DemandeEnqueteDTO test(
+//            @RequestPart(value = "files", required = false) MultipartFile[] files,
+//            @RequestPart("demande") DemandeEnqueteRequestDTO demande
+//    ) {
+//        System.out.println(demande);
+//        if (files != null) {
+//            System.out.println("Nb fichiers = " + files.length);
+//        }
+//        return null;
+//    }
+
+//    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @Operation(
+//            summary = "Créer une demande",
+//            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+//                    content = @Content(
+//                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+//                            schema = @Schema(type = "object"),
+//                            encoding = {
+//                                    @Encoding(name = "files", contentType = "application/octet-stream"),
+//                                    @Encoding(name = "demande", contentType = "application/json")
+//                            }
+//                    )
+//            )
+//    )
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public DemandeEnqueteDTO test(
+//            @RequestPart(value = "files", required = false) MultipartFile[] files,
+//            @RequestPart("demande") DemandeEnqueteRequestDTO demande
+//    ) {
+//        System.out.println("Objet = " + demande.getObjet());
+//        return null;
+//    }
+
+//    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @Operation(summary = "Créer une demande")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "201", description = "Demande créée")
+//    })
+//    public DemandeEnqueteDTO test(
+//            @Parameter(description = "Fichiers à uploader")
+//            @RequestPart(value = "files", required = false) MultipartFile[] files,
+//
+//            @Parameter(description = "Objet JSON de la demande")
+//            @RequestPart("demande") DemandeEnqueteRequestDTO demande
+//    ) {
+//        System.out.println("Objet = " + demande.getObjet());
+//        return null;
+//    }
+
+    @PostMapping(value = "/test", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Créer une demande")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Demande créée")
+    })
+    public DemandeEnqueteDTO test(
+            @Parameter(description = "Fichiers à uploader")
+            @RequestPart(value = "files", required = false) MultipartFile[] files,
+            @Parameter(description = "Objet JSON de la demande")
+            @RequestPart("demande") DemandeEnqueteRequestDTO demande) {
+                if (files != null) {
+            System.out.println("Nb fichiers = " + files.length);
+        }
+        System.out.println(demande.toString());
+      return  null;
+    }
+
+
 
 
     @PostMapping(value = "/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

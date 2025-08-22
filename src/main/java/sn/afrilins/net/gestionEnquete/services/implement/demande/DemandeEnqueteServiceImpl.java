@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.demande.Concerne;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
-import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
@@ -31,7 +30,6 @@ import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.demande.ConcerneService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.demande.DemandeEnqueteService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
-import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
 import sn.afrilins.net.gestionEnquete.services.mapper.demande.ConcerneMapper;
 import sn.afrilins.net.gestionEnquete.services.mapper.demande.DemandeEnqueteMapper;
@@ -198,12 +196,12 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
                             .build());
                 });
 
-        if (files != null && files.length > 0) {
+        if (files != null) {
             for (MultipartFile file : files) {
                 DocumentDTO uploadedDoc = documentStorageService.handleUpload(
                         file,
                         file.getOriginalFilename(),
-                        null,
+                        "Pièce joint demande enquête",
                         type.getCode()
                 );
 

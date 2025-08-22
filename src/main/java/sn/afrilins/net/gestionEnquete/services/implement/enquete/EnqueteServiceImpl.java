@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +18,15 @@ import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.demande.DemandeEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatEnqueteRepository;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
+import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteAvecDemandeMapper;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteMapper;
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -36,6 +40,7 @@ public class EnqueteServiceImpl implements EnqueteService {
     final EtatEnqueteRepository etatEnqueteRepository;
     final DemandeEnqueteRepository demandeEnqueteRepository;
     final EnqueteMapper enqueteMapper;
+    final EnqueteAvecDemandeMapper enqueteAvecDemandeMapper;
 
     static final String ETAT_EN_ATTENTE = "00";
     static final String ETAT_EN_COURS = "01";
@@ -73,13 +78,21 @@ public class EnqueteServiceImpl implements EnqueteService {
     }
 
     @Override
-    public EnqueteDTO findEnqueteById(Long id) {
-        return null;
+    public EnqueteAvecDemandeDTO findEnqueteById(Long id) {
+        return enqueteRepository.findById(id).map(enqueteAvecDemandeMapper::toDto).orElseThrow(()->
+                new CustomBadRequestException(
+                    new BadRequestAlertException("enquete_introuvable", ENTITY, "id_inexistant"))
+        );
     }
 
     @Override
-    public Page<EnqueteDTO> readAllEnquete(String etatCode, Integer progression, LocalDateTime dateDebut, LocalDateTime dateFin, Pageable pageable) {
-        return enqueteRepository.readAllEnquete(etatCode, progression, dateDebut, dateFin, pageable).map(enqueteMapper::toDto);
+    public Page<EnqueteAvecDemandeDTO> readAllEnqueteAvecDemande(String etatCode, Integer progression, LocalDateTime dateDebut, LocalDateTime dateFin, Boolean assignee, Long enqueteurId, Pageable pageable) {
+          return enqueteRepository.readAllEnquete(etatCode, progression, dateDebut, dateFin, assignee, enqueteurId, pageable).map(enqueteAvecDemandeMapper::toDto);
+    }
+
+    @Override
+    public Page<EnqueteDTO> readAllEnqueteSansDemande(String etatCode, Integer progression, LocalDateTime dateDebut, LocalDateTime dateFin, Boolean assignee, Long enqueteurId, Pageable pageable) {
+        return enqueteRepository.readAllEnquete(etatCode, progression, dateDebut, dateFin, assignee, enqueteurId, pageable).map(enqueteMapper::toDto);
     }
 
 
@@ -110,7 +123,6 @@ public class EnqueteServiceImpl implements EnqueteService {
 
         return enqueteMapper.toDto(enquete);
     }
-
 
 
     private void updateEtat(Enquete entity, String etatCode) {
