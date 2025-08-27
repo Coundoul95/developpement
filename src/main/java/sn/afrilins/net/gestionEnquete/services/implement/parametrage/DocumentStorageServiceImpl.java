@@ -7,6 +7,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
+import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
+import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDebugInfo;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentViewUrlDTO;
@@ -29,6 +33,7 @@ import java.util.UUID;
 public class DocumentStorageServiceImpl implements DocumentStorageService {
 
     private final DocumentService documentService;
+    private final UtilisateurRepository utilisateurRepository;
     private  final TypeDocumentService typeDocumentService;
 
     @Value("${app.documents.storage.path}")
@@ -40,7 +45,9 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
     static final String ENTITY = "document";
 
     @Override
-    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId) {
+    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId, Long utilisateurId) {
+
+        var utilisateur = getUtilisateurOrThrow(utilisateurId);
 
         String extension = AppUtils.getExtension(file.getOriginalFilename());
         int taille = (int) file.getSize();
@@ -60,6 +67,7 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
                 .extension(extension)
                 .taille(taille)
                 .chemin(cheminRelatif)
+                .utilisateurId(utilisateur.getId())
                 .version(1)
                 .typeId(typeId)
                 .build();
@@ -68,10 +76,10 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
     }
 
     @Override
-    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType) {
+    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType, Long utilisateurId) {
         ValidationUtils.requireNonBlank(codeType, "codeType", ENTITY);
         var type = typeDocumentService.findTypeDocumentByCode(codeType);
-        return handleUpload(file, nom, description, type.getId());
+        return handleUpload(file, nom, description, type.getId(), utilisateurId);
     }
 
     @Override
@@ -145,5 +153,9 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
         }
     }
 
-
+    private Utilisateur getUtilisateurOrThrow(Long id) {
+        return utilisateurRepository.findById(id)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("utilisateur_introuvable", ENTITY, "utilisateurId_invalide")));
+    }
 }

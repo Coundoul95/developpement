@@ -10,6 +10,7 @@ import sn.afrilins.net.gestionEnquete.domain.parametrage.QDocument;
 import sn.afrilins.net.gestionEnquete.util.AppUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface DocumentRepository extends JpaRepository<Document, Long>, QuerydslPredicateExecutor<Document> {
 
@@ -18,7 +19,8 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, Query
             String nom,
             String extension,
             String type,
-            String categorie) {
+            String categorie,
+            Long utilisateurId) {
         var builder = new BooleanBuilder();
         QDocument doc = QDocument.document;
 
@@ -36,6 +38,9 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, Query
             if (extensions != null) {
                 builder.and(doc.extension.in(extensions));
             }
+        }
+        if(Objects.nonNull(utilisateurId)){
+            builder.and(doc.utilisateur.id.eq(utilisateurId));
         }
         return findAll(builder, pageable);
     }

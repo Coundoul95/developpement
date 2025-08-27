@@ -59,11 +59,12 @@ public class EnqueteServiceImpl implements EnqueteService {
                     new BadRequestAlertException("demande_id", ENTITY, "demande_inexistant")
                 )
         );
-        var etat = etatEnqueteRepository.findFirstByCode("00").orElse(null);
+        var etat = etatEnqueteRepository.findFirstByCode(ETAT_EN_ATTENTE).orElse(null);
         if(Objects.isNull(etat)){
-            etat = etatEnqueteRepository.save(EtatEnquete.builder().code("00").libelle("En attente").build());
+            etat = etatEnqueteRepository.save(EtatEnquete.builder().code(ETAT_EN_ATTENTE).libelle("En attente").build());
         }
         var entity = Enquete.builder().etat(etat).demandeEnquete(demande).progression(0).build();
+        entity.setDateDebut(null);
         return enqueteMapper.toDto(enqueteRepository.save(entity));
     }
 
@@ -103,7 +104,10 @@ public class EnqueteServiceImpl implements EnqueteService {
         ValidationUtils.requireMinLength(nouvelEtatCode, 2, "etat", ENTITY);
         var enquete = getEnqueteOrThrow(enqueteId);
         updateEtat(enquete, nouvelEtatCode);
-        return enqueteMapper.toDto(enqueteRepository.save(enquete));
+        System.out.println("Test date début: "+ enquete.getDateDebut());
+        var test = enqueteMapper.toDto(enqueteRepository.save(enquete));
+        System.out.println(test);
+        return test;
     }
 
     @Override
@@ -160,6 +164,8 @@ public class EnqueteServiceImpl implements EnqueteService {
                 entity.setDateDebut(LocalDateTime.now());
                 break;
         }
+
+        System.out.println("This is a test: "+ entity.getDateDebut());
     }
 
     private boolean isTransitionAutorisee(String etatActuel, String nouvelEtat) {

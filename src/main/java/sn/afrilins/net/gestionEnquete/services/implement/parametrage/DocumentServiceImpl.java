@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.DocumentRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.TypeDocumentRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.DocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentService;
@@ -30,6 +32,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     final DocumentRepository documentRepository;
     final TypeDocumentRepository typeDocumentRepository;
+    final UtilisateurRepository utilisateurRepository;
     final DocumentMapper documentMapper;
 
     static final String ENTITY = "document";
@@ -38,6 +41,8 @@ public class DocumentServiceImpl implements DocumentService {
         ValidationUtils.requireNonBlank(documentDTO.getNom(), "nom", ENTITY);
         ValidationUtils.requirePositive(documentDTO.getTaille(), "taille", ENTITY);
         ValidationUtils.requireNonNull(documentDTO.getTypeId(), "typeId", ENTITY);
+
+        var utilisateur = getUtilisateurOrThrow(documentDTO.getUtilisateurId());
 
         typeDocumentRepository.findById(documentDTO.getTypeId()).orElseThrow(() -> new CustomBadRequestException(
                 new BadRequestAlertException("type_document_existe_pas", "type_document",
@@ -49,6 +54,7 @@ public class DocumentServiceImpl implements DocumentService {
                 .chemin(documentDTO.getChemin()) // Accessible via /document/filename
                 .extension(documentDTO.getExtension())
                 .taille(documentDTO.getTaille())
+                .utilisateur(utilisateur)
                 .version(documentDTO.getVersion())
                 .type(TypeDocument.builder().id(documentDTO.getTypeId()).build())
                 .build();
@@ -108,8 +114,14 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Page<DocumentDTO> readAllDocuments(Pageable pageable, String nom, String extension, String type, String categorie) {
-        return documentRepository.findAllDocument(pageable, nom, extension, type, categorie).map(documentMapper::toDto);
+    public Page<DocumentDTO> readAllDocuments(Pageable pageable, String nom, String extension, String type, String categorie, Long utilisateurId) {
+        return documentRepository.findAllDocument(pageable, nom, extension, type, categorie, utilisateurId).map(documentMapper::toDto);
+    }
+
+    private Utilisateur getUtilisateurOrThrow(Long id) {
+        return utilisateurRepository.findById(id)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("utilisateur_introuvable", ENTITY, "utilisateurId_invalide")));
     }
 
 }

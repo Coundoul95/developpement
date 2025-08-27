@@ -28,6 +28,9 @@ public class DocumentRequestDTO {
     @Schema(description = "L'extension du document")
     String extension;
 
+    @Schema(description = "L'identifiant de l'utilisateur")
+    Long utilisateurId;
+
     @Schema(description = "La taille du document")
     int taille;
 

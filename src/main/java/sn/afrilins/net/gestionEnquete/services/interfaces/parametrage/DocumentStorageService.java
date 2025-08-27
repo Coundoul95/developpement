@@ -21,15 +21,15 @@ public interface DocumentStorageService {
      * @param typeId      L'identifiant du type de document.
      * @return Un objet {@link DocumentDTO} contenant les informations du document enregistré.
      */
-    DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId);
+    DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId, Long utilisateurId);
 
-    DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType);
+    DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType, Long utilisateurId);
 
     /**
      * Récupère la ressource (fichier) correspondant à un document.
      *
-     * @param documentId       L'identifiant du document.
-     * @param checkIfReadable  Si vrai, vérifie également la lisibilité du fichier.
+     * @param documentId      L'identifiant du document.
+     * @param checkIfReadable Si vrai, vérifie également la lisibilité du fichier.
      * @return La ressource {@link Resource} représentant le fichier du document.
      */
     Resource getDocumentFile(Long documentId, boolean checkIfReadable);

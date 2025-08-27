@@ -2,8 +2,8 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.demande;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.EtatDemandeDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.request.EtatDemandeRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.etat_demande.response.EtatDemandeDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.etat_demande.request.EtatDemandeRequestDTO;
 
 /**
  * Interface pour la gestion des opérations liées aux états de demande.

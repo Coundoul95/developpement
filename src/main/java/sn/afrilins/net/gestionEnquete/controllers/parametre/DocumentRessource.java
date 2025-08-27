@@ -45,10 +45,12 @@ public class DocumentRessource {
             @RequestPart("file") MultipartFile file,
             @RequestParam("nom") String nom,
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam("typeId") Long typeId
+            @RequestParam("typeId") Long typeId,
+            @RequestParam("utilisateurId") Long utilisateurId
     ) {
-        return documentStorageService.handleUpload(file, nom, description, typeId);
+        return documentStorageService.handleUpload(file, nom, description, typeId, utilisateurId);
     }
+
 
     /**
      * Visualise ou télécharge un document.
@@ -157,9 +159,10 @@ public class DocumentRessource {
             @Parameter(description = "le nom du document")   @RequestParam(required = false) String nom,
             @Parameter(description = "l'extention du document")  @RequestParam(required = false) String extension,
             @Parameter(description = "le type de document") @RequestParam(required = false) String type,
+            @Parameter(description = "L'identifiant de l'utilisateur") @RequestParam(required = false)Long utilisateurId,
             @Parameter(description = "la catégorie d'extenstion: image, document, code...", example = "document") @RequestParam(required = false) String categorie
     ) {
-        return documentService.readAllDocuments(pageable, nom, extension, type, categorie);
+        return documentService.readAllDocuments(pageable, nom, extension, type, categorie, utilisateurId);
     }
 
     /**

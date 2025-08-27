@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.DemandeSansEnqueteDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.response.DemandeSansEnqueteDTO;
 
 @SuperBuilder(toBuilder = true)
 @Data

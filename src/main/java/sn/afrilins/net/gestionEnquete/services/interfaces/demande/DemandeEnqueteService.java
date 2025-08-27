@@ -3,10 +3,12 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.demande;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.DemandeEnqueteDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteRequestDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.request.DemandeEnqueteUpdateRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.response.*;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.request.DemandeEnqueteRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.request.DemandeEnqueteUpdateRequestDTO;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Interface pour la gestion des opérations liées aux demandes d’enquête.
@@ -64,4 +66,13 @@ DemandeEnqueteService {
     DemandeEnqueteDTO changerEtatDemandeEnquete(Long demandeId, String nouvelEtat);
 
     DemandeEnqueteDTO createDemandeEnqueteAvecDocuments(DemandeEnqueteRequestDTO dto, MultipartFile[] files);
+
+    DemandeEnqueteStatsDTO getStatsEtat(Long utilisateurId);
+
+    DemandeValideEnqueteStatsDTO getStatsEtatEnquete(Long utilisateurId);
+
+    DemandeStatistiquesDTO getStatistiques(Long utilisateurId);
+
+    List<DemandeSerieDTO> getEvolutionDemandes(Long utilisateurId, LocalDate date);
+
 }

@@ -82,6 +82,7 @@ public class SourceInfo {
             inverseJoinColumns = @JoinColumn(name = "document_id")
     )
     @JsonIgnoreProperties("sourceInfos")
+    @Builder.Default
     private List<Document> documents = new ArrayList<>();
 
     @CreationTimestamp

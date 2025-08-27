@@ -1,18 +1,54 @@
 package sn.afrilins.net.gestionEnquete.repository.demande;
 
 import com.querydsl.core.BooleanBuilder;
+import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
 import sn.afrilins.net.gestionEnquete.domain.demande.QDemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public interface DemandeEnqueteRepository extends JpaRepository<DemandeEnquete, Long>, QuerydslPredicateExecutor<DemandeEnquete> {
+
+    @Query("SELECT d.etat.code, COUNT(d) FROM DemandeEnquete d WHERE (:utilisateurId IS NULL OR d.utilisateur.id = :utilisateurId) GROUP BY d.etat.code ")
+    List<Object[]> countDemandesByEtat(@Param("utilisateurId") Long utilisateurId);
+
+    // --- Compter par état (optionnellement par utilisateur) ---
+    @Query("SELECT COUNT(d) " +
+           "FROM DemandeEnquete d "+
+           "WHERE (:etat IS NULL OR d.etat.code = :etat) "+
+            " AND (:userId IS NULL OR d.utilisateur.id = :userId)")
+    long countByEtatAndUtilisateur(@Param("etat") String etat,
+                                   @Param("userId") Long userId);
+
+    @Query(value = "SELECT TRUNC(d.created_at) as jour, COUNT(*) " +
+            "FROM DEMANDE_DEMANDE_ENQUETE d " +
+            "WHERE d.created_at >= :startDate " +
+            "AND (:userId IS NULL OR d.utilisateur_id = :userId) " +
+            "GROUP BY TRUNC(d.created_at) " +
+            "ORDER BY jour",
+            nativeQuery = true)
+    List<Object[]> getDemandesCreeesParJour(@Param("userId") Long userId,
+                                            @Param("startDate") LocalDateTime startDate);
+
+    @Query(value = "SELECT TRUNC(d.date_validation) as jour, COUNT(*) " +
+            "FROM DEMANDE_DEMANDE_ENQUETE d " +
+            "WHERE d.date_validation >= :startDate " +
+            "AND (:userId IS NULL OR d.utilisateur_id = :userId) " +
+            "GROUP BY TRUNC(d.date_validation) " +
+            "ORDER BY jour",
+            nativeQuery = true)
+    List<Object[]> getDemandesTraiteesParJour(@Param("userId") Long userId,
+                                              @Param("startDate") LocalDateTime startDate);
+
 
     default Page<DemandeEnquete> findAllDemandeEnquete(
             Long utilisateurId,

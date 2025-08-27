@@ -38,7 +38,7 @@ public class Enquete {
     @SequenceGenerator(name = "SEQ_GE_ENQUETE_ENQUETE", sequenceName = "SEQ_GE_ENQUETE_ENQUETE", allocationSize = 1)
     Long id;
 
-    @Column(name = "date_debut", updatable = false)
+    @Column(name = "date_debut")
     LocalDateTime dateDebut;
 
     @Column(name = "date_fin")

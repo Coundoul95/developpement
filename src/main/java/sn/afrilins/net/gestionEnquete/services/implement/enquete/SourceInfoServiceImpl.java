@@ -171,7 +171,7 @@ public class SourceInfoServiceImpl implements SourceInfoService {
 
         if (files != null && !files.isEmpty()) {
             List<DocumentDTO> uploadedDocs = files.stream()
-                    .map(file -> documentStorageService.handleUpload(file, nom, "", type.getId()))
+                    .map(file -> documentStorageService.handleUpload(file, nom, "", type.getId(), requestDTO.getUtilisateurId()))
                     .collect(Collectors.toList());
 
             List<Long> documentIds = uploadedDocs.stream()

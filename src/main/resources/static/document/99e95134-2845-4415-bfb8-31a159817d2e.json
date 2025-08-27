@@ -1,7 +1,0 @@
-{
-  "timestamp": "2025-06-19T12:05:47.837+00:00",
-  "status": 404,
-  "error": "Not Found",
-  "message": "could not execute statement; SQL [n/a]; nested exception is org.hibernate.exception.SQLGrammarException: could not execute statement",
-  "path": "/v1/api/notification"
-}

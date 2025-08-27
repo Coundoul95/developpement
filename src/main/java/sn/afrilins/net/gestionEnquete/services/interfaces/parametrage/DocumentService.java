@@ -45,6 +45,6 @@ public interface DocumentService {
      * @param pageable les informations de pagination
      * @return une page de documents
      */
-        Page<DocumentDTO> readAllDocuments(Pageable pageable, String nom, String extension, String type, String categorie);
+    Page<DocumentDTO> readAllDocuments(Pageable pageable, String nom, String extension, String type, String categorie, Long utilisateurId);
 
 }
