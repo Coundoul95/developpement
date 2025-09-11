@@ -9,13 +9,14 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @SuperBuilder(toBuilder = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(name = "demande_enquete_update_request", description = "le modele demande_enquete_update_request")
+@Schema(name = "DemandeEnqueteUpdateRequest", description = "le modele DemandeEnqueteUpdateRequest")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DemandeEnqueteUpdateRequestDTO {
 
@@ -37,10 +38,10 @@ public class DemandeEnqueteUpdateRequestDTO {
     @Schema(name = "commentaireValidation", description = "La commentaire de validation")
     Optional<String> commentaireValidation;
 
-    @Schema(name = "etatCode", description = "Le code de l'état de la demande")
-    Optional<String> etatCode;
-
     @Schema(name = "concerneId", description = "Le concerné")
     Optional<Long> concerneId;
+
+    @Schema(description = "Liste des identifiants des documents associés")
+    List<Long> documentIds;
 
 }

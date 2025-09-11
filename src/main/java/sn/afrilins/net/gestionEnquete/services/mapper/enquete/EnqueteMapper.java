@@ -3,8 +3,8 @@ package sn.afrilins.net.gestionEnquete.services.mapper.enquete;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
-import sn.afrilins.net.gestionEnquete.services.mapper.demande.DemandeSansEnqueteMapper;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
+import sn.afrilins.net.gestionEnquete.services.mapper.parametrage.UtilisateurMapper;
 import sn.afrilins.net.gestionEnquete.util.EntityMapper;
 
 
@@ -12,7 +12,7 @@ import sn.afrilins.net.gestionEnquete.util.EntityMapper;
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses = { EtatEnqueteMapper.class}
+        uses = { EtatEnqueteMapper.class, UtilisateurMapper.class}
 )
 public interface EnqueteMapper extends EntityMapper<EnqueteDTO, Enquete> {
 

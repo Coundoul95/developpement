@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EtatSourceInfoDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.EtatSourceInfoRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.EtatSourceInfoDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.EtatSourceInfoRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EtatSourcInfoService;
 
 import javax.validation.Valid;

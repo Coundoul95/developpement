@@ -2,8 +2,8 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.AutreInfoDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.AutreInfoRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.autre_info.response.AutreInfoDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.autre_info.request.AutreInfoRequestDTO;
 
 public interface AutreInfoService {
 

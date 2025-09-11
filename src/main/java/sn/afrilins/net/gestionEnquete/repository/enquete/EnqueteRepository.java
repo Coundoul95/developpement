@@ -8,68 +8,51 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import sn.afrilins.net.gestionEnquete.domain.demande.QConcerne;
+import sn.afrilins.net.gestionEnquete.domain.demande.QDemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.QEnquete;
+import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.response.DemandeValideEnqueteStatsDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EnqueteRepository extends JpaRepository<Enquete, Long>, QuerydslPredicateExecutor<Enquete> {
-//
-//    @Query("SELECT COUNT(e), " +
-//            "SUM(CASE WHEN d.urgent = true OR d.priorite = 1 THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN e.etat.code = '00' THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN d.dateEcheance < CURRENT_TIMESTAMP AND e.etat.code <> 'TERMINE' THEN 1 ELSE 0 END) " +
-//            "FROM Enquete e " +
-//            "JOIN e.demandeEnquete d " +
-//            "WHERE d.etat.code = '01' " + // uniquement demandes validées
-//            "AND (:utilisateurId IS NULL OR d.utilisateur.id = :utilisateurId)"
-//    )
-//    Object[] getStatsForValidatedDemandes(@Param("utilisateurId") Long utilisateurId);
+    @Query("SELECT COUNT(e) FROM Enquete e WHERE e.etat.code = :codeEtat")
+    long countByEtat(String codeEtat);
 
-//    @Query("SELECT COUNT(e), " +
-//            "SUM(CASE WHEN d.urgent = true OR d.priorite = 1 THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN e.etat.code = '00' THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN d.dateEcheance < CURRENT_TIMESTAMP AND e.etat.code <> 'TERMINE' THEN 1 ELSE 0 END) " +
-//            "FROM Enquete e " +
-//            "JOIN e.demandeEnquete d " +
-//            "WHERE d.etat.code = '01' " +
-//            "AND (:utilisateurId IS NULL OR d.utilisateur.id = :utilisateurId)")
-//    Object[] getStatsForValidatedDemandes(@Param("utilisateurId") Long utilisateurId);
+    @Query("SELECT e.etat.code, COUNT(e) FROM Enquete e WHERE (:utilisateurId IS NULL OR e.enqueteur.id = :utilisateurId) GROUP BY e.etat.code ")
+    List<Object[]> countEnquetesByEtat(@Param("utilisateurId") Long utilisateurId);
 
-//    @Query("SELECT COUNT(e), " +
-//            "SUM(CASE WHEN d.urgent = true OR d.priorite = 1 THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN e.etat.code = '00' THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN d.dateEcheance < CURRENT_TIMESTAMP AND e.etat.code <> 'TERMINE' THEN 1 ELSE 0 END) " +
-//            "FROM Enquete e " +
-//            "JOIN e.demandeEnquete d " +
-//            "WHERE d.etat.code = '01' " +
-//            "AND (:utilisateurId IS NULL OR d.utilisateur.id = :utilisateurId)")
-//    Object[] getStatsForValidatedDemandes(@Param("utilisateurId") Long utilisateurId);
-//
+    //    @Query("SELECT COUNT(e) FROM Enquete e WHERE e.demandeEnquete.dateEcheance IS NOT NULL " +
+//            "AND e.demandeEnquete.dateEcheance <= CURRENT_DATE + 7")
+//    long countEcheancesProches();
+    @Query("SELECT COUNT(e) " +
+            "FROM Enquete e " +
+            "WHERE e.demandeEnquete.dateEcheance IS NOT NULL " +
+            "AND e.demandeEnquete.dateEcheance <= CURRENT_DATE + 7 " +
+            "AND (:enqueteurId IS NULL OR e.enqueteur.id = :enqueteurId)")
+    long countEcheancesProches(@Param("enqueteurId") Long enqueteurId);
 
-//    @Query("SELECT new sn.afrilins.net.gestionEnquete.dto.DemandeValideEnqueteStatsDTO(" +
-//            "COUNT(e), " +
-//            "SUM(CASE WHEN d.urgent = true OR d.priorite = 1 THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN e.etat.code = '00' THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN d.dateEcheance < CURRENT_TIMESTAMP AND e.etat.code <> 'TERMINE' THEN 1 ELSE 0 END)) " +
-//            "FROM Enquete e " +
-//            "JOIN e.demandeEnquete d " +
-//            "WHERE d.etat.code = '01' " +
-//            "AND (:utilisateurId IS NULL OR d.utilisateur.id = :utilisateurId)")
-//    DemandeValideEnqueteStatsDTO getStatsForValidatedDemandes(@Param("utilisateurId") Long utilisateurId);
+    @Query("SELECT COUNT(e) " +
+            "FROM Enquete e " +
+            "WHERE e.demandeEnquete.urgent = true " +
+            "AND (:enqueteurId IS NULL OR e.enqueteur.id = :enqueteurId)")
+    long countEnquetesUrgentes(@Param("enqueteurId") Long enqueteurId);
+
+    @Query("SELECT AVG(e.progression) " +
+            "FROM Enquete e " +
+            "WHERE (:enqueteurId IS NULL OR e.enqueteur.id = :enqueteurId)")
+    Double averageProgression(@Param("enqueteurId") Long enqueteurId);
 
 
-//    @Query("SELECT COUNT(e), " +
-//            "SUM(CASE WHEN d.urgent = true OR d.priorite = 1 THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN e.etat.code = '00' THEN 1 ELSE 0 END), " +
-//            "SUM(CASE WHEN d.dateEcheance < CURRENT_TIMESTAMP AND e.etat.code <> 'TERMINE' THEN 1 ELSE 0 END) " +
-//            "FROM Enquete e " +
-//            "JOIN e.demandeEnquete d " +
-//            "WHERE d.etat.code = '01' " +
-//            "AND (:utilisateurId IS NULL OR d.utilisateur.id = :utilisateurId)")
-//    List<Object[]> getStatsForValidatedDemandes(@Param("utilisateurId") Long utilisateurId);
+    @Query("SELECT e " +
+            "FROM Enquete e " +
+            "WHERE e.demandeEnquete.urgent = true " +
+            "AND (:enqueteurId IS NULL OR e.enqueteur.id = :enqueteurId)")
+    List<Enquete> findEnquetesUrgentes(@Param("enqueteurId") Long enqueteurId);
+
 
     @Query("SELECT " +
             "SUM(CASE WHEN e.etat.code IN ('01','03') THEN 1 ELSE 0 END), " + // totalEnCours
@@ -89,9 +72,15 @@ public interface EnqueteRepository extends JpaRepository<Enquete, Long>, Queryds
             LocalDateTime dateFin,
             Boolean assignee,      // filtrer assignée/non assignée
             Long enqueteurId,      // filtrer par enquêteur
+            String search,
+            String type,
+            Integer priorite,
+            Boolean urgent,
             Pageable pageable) {
 
         QEnquete enquete = QEnquete.enquete;
+        QDemandeEnquete demande = QDemandeEnquete.demandeEnquete;
+        QConcerne concerne = QConcerne.concerne;
 
         BooleanBuilder predicate = new BooleanBuilder();
 
@@ -119,8 +108,38 @@ public interface EnqueteRepository extends JpaRepository<Enquete, Long>, Queryds
             }
         }
 
+        if(priorite != null){
+            predicate.and(enquete.demandeEnquete.priorite.eq(priorite));
+        }
+
+        if(urgent!=null){
+            predicate.and(enquete.demandeEnquete.urgent.eq(urgent));
+        }
+
         if (enqueteurId != null) {
             predicate.and(enquete.enqueteur.id.eq(enqueteurId));
+        }
+
+        if(type != null){
+            predicate.and(enquete.demandeEnquete.concerne.type.eq(TypeConcerne.fromValue(type)));
+        }
+
+        if (search != null && !search.isEmpty()) {
+            BooleanBuilder searchPredicate = new BooleanBuilder();
+
+            searchPredicate.or(enquete.reference.containsIgnoreCase(search));
+            searchPredicate.or(enquete.instruction.containsIgnoreCase(search));
+
+            // champs liés dans DemandeEnquete
+            searchPredicate.or(enquete.demandeEnquete.reference.containsIgnoreCase(search));
+            searchPredicate.or(enquete.demandeEnquete.objet.containsIgnoreCase(search));
+            searchPredicate.or(enquete.demandeEnquete.description.containsIgnoreCase(search));
+
+            // champs liés dans Concerne (via DemandeEnquete)
+            searchPredicate.or(enquete.demandeEnquete.concerne.telephone.containsIgnoreCase(search));
+            searchPredicate.or(enquete.demandeEnquete.concerne.regionSocial.containsIgnoreCase(search));
+
+            predicate.and(searchPredicate);
         }
 
         return findAll(predicate, pageable);

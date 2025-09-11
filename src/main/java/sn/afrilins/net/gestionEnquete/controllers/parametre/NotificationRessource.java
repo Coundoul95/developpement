@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.controllers.parametre;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +21,7 @@ import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.Notificati
 import javax.validation.Valid;
 import java.util.List;
 
+@Hidden
 @RestController
 @RequestMapping("/v1/api/notification")
 @Tag(name = "/v1/api/notification", description = "notification, controllers")

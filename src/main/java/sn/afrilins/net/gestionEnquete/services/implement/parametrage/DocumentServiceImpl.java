@@ -26,7 +26,6 @@ import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 @Service
 @Slf4j
 @AllArgsConstructor
-@Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DocumentServiceImpl implements DocumentService {
 
@@ -37,6 +36,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     static final String ENTITY = "document";
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public DocumentDTO createDocument(DocumentRequestDTO documentDTO) {
         ValidationUtils.requireNonBlank(documentDTO.getNom(), "nom", ENTITY);
         ValidationUtils.requirePositive(documentDTO.getTaille(), "taille", ENTITY);
@@ -44,9 +45,10 @@ public class DocumentServiceImpl implements DocumentService {
 
         var utilisateur = getUtilisateurOrThrow(documentDTO.getUtilisateurId());
 
-        typeDocumentRepository.findById(documentDTO.getTypeId()).orElseThrow(() -> new CustomBadRequestException(
+       var type =  typeDocumentRepository.findById(documentDTO.getTypeId()).orElseThrow(() -> new CustomBadRequestException(
                 new BadRequestAlertException("type_document_existe_pas", "type_document",
                         "type_document_existe_pas")));
+
 
         var document = Document.builder()
                 .nom(documentDTO.getNom())
@@ -56,14 +58,14 @@ public class DocumentServiceImpl implements DocumentService {
                 .taille(documentDTO.getTaille())
                 .utilisateur(utilisateur)
                 .version(documentDTO.getVersion())
-                .type(TypeDocument.builder().id(documentDTO.getTypeId()).build())
+                .type(type)
                 .build();
 
         return documentMapper.toDto(documentRepository.save(document));
     }
 
-
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DocumentDTO updateDocument(DocumentDTO document) {
         ValidationUtils.requirePositiveId(document.getId(), "id", ENTITY);
         ValidationUtils.requireNonBlank(document.getNom(), "nom", ENTITY);
@@ -118,6 +120,7 @@ public class DocumentServiceImpl implements DocumentService {
         return documentRepository.findAllDocument(pageable, nom, extension, type, categorie, utilisateurId).map(documentMapper::toDto);
     }
 
+    
     private Utilisateur getUtilisateurOrThrow(Long id) {
         return utilisateurRepository.findById(id)
                 .orElseThrow(() -> new CustomBadRequestException(

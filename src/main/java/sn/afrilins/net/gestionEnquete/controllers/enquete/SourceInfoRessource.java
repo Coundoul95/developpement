@@ -10,16 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.SourceInfoDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.SourceInfoRequestDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.SourceInfoUpdateRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.SourceInfoDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoUpdateRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.SourceInfoService;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/source/info")

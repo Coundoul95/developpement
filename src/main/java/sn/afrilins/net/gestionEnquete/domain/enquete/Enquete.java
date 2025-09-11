@@ -50,6 +50,16 @@ public class Enquete {
     @Column(name = "date_annulation")
     LocalDateTime dateAnnulation;
 
+    @Column(name = "date_limite")
+    LocalDateTime dateLimite;
+
+    @Column(name = "date_assignation")
+    LocalDateTime dateAssignation;
+
+    @Lob
+    @Column(name = "instruction")
+    String instruction;
+
     @Column(name = "progression", nullable = false)
     @Builder.Default
     int progression = 0;

@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.controllers.parametre;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +21,7 @@ import sn.afrilins.net.gestionEnquete.util.AppUtils;
 
 import javax.validation.Valid;
 
+@Hidden
 @RestController
 @RequestMapping("/v1/api/documents")
 @Tag(name = "/v1/api/documents", description = "Document, controllers")

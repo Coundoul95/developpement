@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteAvecDemandeDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.mapper.demande.DemandeSansEnqueteMapper;
 import sn.afrilins.net.gestionEnquete.util.EntityMapper;
 

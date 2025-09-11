@@ -2,9 +2,9 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EvenementCalendrierDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.StatistiqueCalendrierDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.EvenementCalendrierRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.response.EvenementCalendrierDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.response.StatistiqueCalendrierDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.request.EvenementCalendrierRequestDTO;
 
 import java.time.LocalDate;
 

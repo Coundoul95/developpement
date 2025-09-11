@@ -1,6 +1,7 @@
 package sn.afrilins.net.gestionEnquete.controllers.parametre;
 
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +19,7 @@ import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocume
 
 import javax.validation.Valid;
 
+@Hidden
 @RestController
 @RequestMapping("/v1/api/type/document")
 @Tag(name = "/v1/api/type/document", description = "typeDocument, controllers")

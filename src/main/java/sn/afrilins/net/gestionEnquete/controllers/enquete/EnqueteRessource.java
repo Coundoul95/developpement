@@ -11,13 +11,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteAvecDemandeDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
+import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteStatsDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
-import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteAvecDemandeMapper;
-import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteMapper;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 
 @RestController
@@ -27,6 +28,25 @@ import java.time.LocalDateTime;
 @Slf4j
 public class EnqueteRessource {
     private final EnqueteService enqueteService;
+
+
+    @Operation(
+            summary = "Statistiques des demandes d'enquête",
+            description = "Retourne les statistiques globales ou celles d'un utilisateur donné"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Statistiques récupérées avec succès"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @GetMapping("/stats/etat")
+    @ResponseStatus(HttpStatus.OK) // ✅ on met 200 car c'est une récupération (GET), pas une création
+    public EnqueteStatsDTO getStatsEtat(
+            @Parameter(description = "ID de l'utilisateur (optionnel)")
+            @RequestParam(name = "utilisateurId", required = false) Long utilisateurId
+    ) {
+        return enqueteService.getStatsEtat(utilisateurId);
+    }
 
     @Operation(summary = "Créer une nouvelle enquête liée à une demande", description = "Crée une nouvelle enquête à partir de l'ID d'une demande d'enquête")
     @ApiResponses({
@@ -39,6 +59,22 @@ public class EnqueteRessource {
     public EnqueteDTO createEnquete(@PathVariable Long demandeId) {
         log.info("Création d'une enquête pour la demande d'ID {}", demandeId);
         return enqueteService.createEnquete(demandeId);
+    }
+
+    @Operation(summary = "Créer une nouvelle enquête liée à une demande", description = "Crée une nouvelle enquête à partir de l'ID d'une demande d'enquête")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Création réussie"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @PostMapping("/assigner/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EnqueteDTO assignerEnquete(
+            @PathVariable Long id,
+            @RequestBody @Valid EnqueteAssignationRequestDTO dto
+    ) {
+        log.info("Assignation d'un enquêteur à l'enquête {}", id);
+        return enqueteService.assignerEnqueteur(id, dto);
     }
 
     @Operation(summary = "Mettre à jour une enquête", description = "Met à jour les informations d'une enquête existante")
@@ -70,27 +106,25 @@ public class EnqueteRessource {
             Pageable pageable,
             @Parameter(description = "Le code de l'état")
             @RequestParam(required = false) String etatCode,
-
             @Parameter(description = "La progression")
             @RequestParam(required = false) Integer progression,
-
             @Parameter(description = "Date de début (format ISO-8601)")
             @RequestParam(required = false) LocalDateTime dateDebut,
-
             @Parameter(description = "Date de fin (format ISO-8601)")
             @RequestParam(required = false) LocalDateTime dateFin,
-
             @Parameter(description = "Filtrer par assignation (true = assignée, false = non assignée)")
             @RequestParam(required = false) Boolean assignee,
-
             @Parameter(description = "ID de l'enquêteur assigné")
-            @RequestParam(required = false) Long enqueteurId
+            @RequestParam(required = false) Long enqueteurId,
+            @Parameter(description = "Recherche global")
+            @RequestParam(required = false) String search,
+            @Parameter(description = "Le type de concerne de la demanade: (employeur, beneficiaire, travailleur)")
+            @RequestParam(required = false) String type,
+            @Parameter(description = "La priorité de la demande")
+            @RequestParam(required = false) Integer priorite,
+            @Parameter(description = "L'urgence de la demande")
+            @RequestParam(required = false) Boolean urgent
     ) {
-        log.info("Récupération de la liste paginée des enquêtes avec filtres : "
-                        + "etatCode={}, progression={}, dateDebut={}, dateFin={}, assignee={}, enqueteurId={}",
-                etatCode, progression, dateDebut, dateFin, assignee, enqueteurId
-        );
-
         return enqueteService.readAllEnqueteAvecDemande(
                 etatCode,
                 progression,
@@ -98,6 +132,10 @@ public class EnqueteRessource {
                 dateFin,
                 assignee,
                 enqueteurId,
+                search,
+                type,
+                priorite,
+                urgent,
                 pageable
         );
     }
@@ -118,25 +156,28 @@ public class EnqueteRessource {
             Pageable pageable,
             @Parameter(description = "Le code de l'état")
             @RequestParam(required = false) String etatCode,
-
             @Parameter(description = "La progression de l'enquête (0 à 100)")
             @RequestParam(required = false) Integer progression,
-
             @Parameter(description = "Date de début (format ISO-8601)")
             @RequestParam(required = false) LocalDateTime dateDebut,
-
             @Parameter(description = "Date de fin (format ISO-8601)")
             @RequestParam(required = false) LocalDateTime dateFin,
-
             @Parameter(description = "Filtrer par assignation (true = assignée, false = non assignée)")
             @RequestParam(required = false) Boolean assignee,
-
             @Parameter(description = "ID de l'enquêteur assigné")
-            @RequestParam(required = false) Long enqueteurId
+            @RequestParam(required = false) Long enqueteurId,
+            @Parameter(description = "Recherche global")
+            @RequestParam(required = false) String search,
+            @Parameter(description = "Le type de concerne de la demanade: (employeur, beneficiaire, travailleur)")
+            @RequestParam(required = false) String type,
+            @Parameter(description = "La priorité de la demande")
+            @RequestParam(required = false) Integer priorite,
+            @Parameter(description = "L'urgence de la demande")
+            @RequestParam(required = false) Boolean urgent
     ) {
         log.info("Récupération de la liste paginée des enquêtes sans demande avec filtres : "
-                        + "etatCode={}, progression={}, dateDebut={}, dateFin={}, assignee={}, enqueteurId={}",
-                etatCode, progression, dateDebut, dateFin, assignee, enqueteurId
+                        + "etatCode={}, progression={}, dateDebut={}, dateFin={}, assignee={}, enqueteurId={}, search={}",
+                etatCode, progression, dateDebut, dateFin, assignee, enqueteurId, search
         );
 
         return enqueteService.readAllEnqueteSansDemande(
@@ -146,6 +187,10 @@ public class EnqueteRessource {
                 dateFin,
                 assignee,
                 enqueteurId,
+                search,
+                type,
+                priorite,
+                urgent,
                 pageable
         );
     }

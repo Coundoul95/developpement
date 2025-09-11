@@ -157,8 +157,27 @@ public class DemandeEnqueteRessource {
     @ResponseStatus(HttpStatus.OK)
     public DemandeEnqueteDTO updateDemande(
             @PathVariable Long id,
-            @Valid @RequestBody DemandeEnqueteUpdateRequestDTO dto) {
+            @Valid @RequestBody DemandeEnqueteUpdateRequestDTO dto
+
+    ) {
         return demandeEnqueteService.updateDemandeEnquete(id, dto);
+    }
+
+    @Operation(summary = "Modifier une demande d'enquête avec documents", description = "Met à jour une demande et ajoute des fichiers joints")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Modification réussie"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "404", description = "Ressource non trouvée"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @PutMapping(value = "/{id}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public DemandeEnqueteDTO updateDemandeAvecDocument(
+            @PathVariable Long id,
+            @RequestPart(value = "demande", required = true) @Valid DemandeEnqueteUpdateRequestDTO dto,
+            @RequestPart(name = "documents", required = false) MultipartFile[] documents
+    ) {
+        return demandeEnqueteService.updateDemandeEnqueteAvecDocuments(id, dto, documents);
     }
 
     @Operation(summary = "Lister les demandes d'enquête", description = "Retourne la liste paginée des demandes d'enquête")

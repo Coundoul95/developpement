@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.controllers.demande;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +19,7 @@ import sn.afrilins.net.gestionEnquete.services.interfaces.demande.ConcerneServic
 
 import javax.validation.Valid;
 
+@Hidden
 @RestController
 @RequestMapping("/v1/api/concerne")
 @Tag(name = "/v1/api/concerne", description = "concerne, controllers")
@@ -66,10 +68,10 @@ public class ConcerneRessource {
     @ResponseStatus(HttpStatus.OK)
     public Page<ConcerneDTO> readConcernes(
             @RequestParam(required = false) TypeConcerne type,
-            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String telephone,
             @RequestParam(required = false) String regionSocial,
             Pageable pageable) {
-        return concerneService.readAllConcernes(type, numero, regionSocial, pageable);
+        return concerneService.readAllConcernes(type, telephone, regionSocial, pageable);
     }
 
     @Operation(summary = "Rechercher un concerné par ID", description = "Retourne un concerné à partir de son identifiant")

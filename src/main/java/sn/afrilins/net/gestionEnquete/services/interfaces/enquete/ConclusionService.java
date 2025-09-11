@@ -2,8 +2,8 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.ConclusionDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.ConclusionRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.conclusion.response.ConclusionDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.conclusion.request.ConclusionRequestDTO;
 
 public interface ConclusionService {
 

@@ -43,6 +43,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -113,8 +114,11 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
             entity.addDocument(doc);
         }
 
+        log.debug("Test demande créer", entity);
+
         return demandeEnqueteMapper.toDto(demandeEnqueteRepository.save(entity));
     }
+
 
 
     @Override
@@ -123,10 +127,16 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
         DemandeEnquete entity = getDemandeOrThrow(id);
 
+        // Mise à jour des champs standards
         dto.getObjet().ifPresent(obj -> {
             ValidationUtils.requireNonBlank(obj, "objet", ENTITY);
             ValidationUtils.requireMinLength(obj, 3, "objet", ENTITY);
             entity.setObjet(obj);
+        });
+
+        dto.getDescription().ifPresent(desc -> {
+            ValidationUtils.requireNonBlank(desc, "description", ENTITY);
+            entity.setDescription(desc);
         });
 
         dto.getPriorite().ifPresent(priorite -> {
@@ -135,40 +145,75 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
         });
 
         dto.getUrgent().ifPresent(entity::setUrgent);
+        dto.getDateEcheance().ifPresent(entity::setDateEcheance);
+//        dto.getCommentaireValidation().ifPresent(entity::setCommentaireValidation);
+        Optional.ofNullable(dto.getCommentaireValidation())
+                .flatMap(c -> c) // si dto renvoie déjà Optional
+                .ifPresent(entity::setCommentaireValidation);
 
-        dto.getCommentaireValidation().ifPresent(commentaire -> {
-            ValidationUtils.requireNonBlank(commentaire, "commentaireValidation", ENTITY);
-            entity.setCommentaireValidation(commentaire);
-        });
-
-        dto.getConcerneId().ifPresent(concerneId -> {
-            ValidationUtils.requirePositiveId(concerneId, "concerneId", ENTITY);
-            entity.setConcerne(getConcerneOrThrow(concerneId));
-        });
-
-        dto.getEtatCode().ifPresent(code -> updateEtat(entity, code));
+        dto.getConcerneId().ifPresent(concerneId -> entity.setConcerne(getConcerneOrThrow(concerneId)));
 
         DemandeEnquete entitySaved = demandeEnqueteRepository.save(entity);
 
-        if (ETAT_VALIDEE.equals(entitySaved.getEtat().getCode())) {
-            enqueteService.createEnquete(entitySaved.getId());
-        }
 
         return demandeEnqueteMapper.toDto(entitySaved);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public DemandeEnqueteDTO updateDemandeEnqueteAvecDocuments(Long id, DemandeEnqueteUpdateRequestDTO dto, MultipartFile[] files) {
+        // Mise à jour des champs principaux
+        DemandeEnqueteDTO updatedDemande = updateDemandeEnquete(id, dto);
+        DemandeEnquete entity = demandeEnqueteRepository.getById(updatedDemande.getId());
+
+        // Mise à jour des documents existants
+        if (dto.getDocumentIds() != null) {
+            List<Document> documents = documentRepository.findAllById(dto.getDocumentIds());
+            entity.getDocuments().clear(); // Remplacer ou fusionner selon le besoin
+            documents.forEach(entity::addDocument);
+        }
+
+        // Upload des nouveaux fichiers
+        if (files != null) {
+            var type = typeDocumentRepository.findFirstByCode("PJ00")
+                    .orElseGet(() -> typeDocumentRepository.save(TypeDocument.builder()
+                            .code("PJ00")
+                            .libelle("Pièce jointe demande enquête")
+                            .build()));
+
+            for (MultipartFile file : files) {
+                DocumentDTO uploadedDoc = documentStorageService.handleUpload(
+                        file,
+                        file.getOriginalFilename(),
+                        "Pièce jointe demande enquête",
+                        type.getCode(),
+                        entity.getUtilisateur().getId()
+                );
+                Document docEntity = documentRepository.getById(uploadedDoc.getId());
+                entity.addDocument(docEntity);
+                documentRepository.save(docEntity);
+            }
+        }
+
+        return demandeEnqueteMapper.toDto(demandeEnqueteRepository.save(entity));
+    }
+
+
+
+    @Override
     public void deleteDemandeEnquete(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
         var entity = getDemandeOrThrow(id);
-        demandeEnqueteRepository.delete(entity);
+        demandeEnqueteRepository.delete(entity); 
     }
+
 
     @Override
     public DemandeEnqueteDTO findDemandeEnqueteById(Long id) {
         ValidationUtils.requirePositiveId(id, "id", ENTITY);
         return demandeEnqueteMapper.toDto(getDemandeOrThrow(id));
     }
+
 
     @Override
     public Page<DemandeEnqueteDTO> findAllDemandeEnquete(Long utilisateurId, Boolean urgent, String objet, String type, String etat, String etatEnquete, Integer priorite, String search, Pageable pageable) {
@@ -201,11 +246,13 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
         return demandeEnqueteMapper.toDto(entitySaved);
     }
 
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DemandeEnqueteDTO createDemandeEnqueteAvecDocuments(DemandeEnqueteRequestDTO dto, MultipartFile[] files) {
 
         var demandeDto = createDemandeEnquete(dto);
-        var entity = demandeEnqueteRepository.getById((demandeDto.getId()));
+        var entity = demandeEnqueteRepository.getById(demandeDto.getId());
 
         var type = typeDocumentRepository.findFirstByCode("PJ00")
                 .orElseGet(() -> {
@@ -226,14 +273,17 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
                         dto.getUtilisateurId()
                 );
 
-                Document docEntity = documentMapper.toEntity(uploadedDoc);
+
+                Document docEntity = documentRepository.getById(uploadedDoc.getId());
                 entity.addDocument(docEntity);
                 documentRepository.save(docEntity);
             }
         }
+        ;
 
-        return demandeDto;
+        return demandeEnqueteMapper.toDto(demandeEnqueteRepository.save(entity));
     }
+
 
     @Override
     public DemandeEnqueteStatsDTO getStatsEtat(Long utilisateurId) {
@@ -276,8 +326,10 @@ public class DemandeEnqueteServiceImpl implements DemandeEnqueteService {
         );
     }
 
+
     @Override
     public DemandeStatistiquesDTO getStatistiques(Long utilisateurId) {
+        System.out.println("Test utilisateur "+ utilisateurId);
         long total = demandeEnqueteRepository.countByEtatAndUtilisateur(null, utilisateurId);
         long enCours = demandeEnqueteRepository.countByEtatAndUtilisateur(EtatEnqueteCode.EN_COURS.getValue(), utilisateurId);
         long terminees = demandeEnqueteRepository.countByEtatAndUtilisateur(EtatEnqueteCode.TERMINEE.getValue(), utilisateurId);

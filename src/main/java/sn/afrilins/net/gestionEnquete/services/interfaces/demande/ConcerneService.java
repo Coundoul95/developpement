@@ -46,5 +46,5 @@ public interface ConcerneService {
      * @param pageable les informations de pagination
      * @return une page d'états de demande
      */
-    Page<ConcerneDTO> readAllConcernes(TypeConcerne type, String numero, String regionSocial, Pageable pageable);
+    Page<ConcerneDTO> readAllConcernes(TypeConcerne type, String telephone, String regionSocial, Pageable pageable);
 }

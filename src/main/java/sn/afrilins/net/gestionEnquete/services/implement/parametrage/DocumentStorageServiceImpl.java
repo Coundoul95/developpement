@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
@@ -45,6 +46,7 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
     static final String ENTITY = "document";
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId, Long utilisateurId) {
 
         var utilisateur = getUtilisateurOrThrow(utilisateurId);
@@ -76,6 +78,7 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType, Long utilisateurId) {
         ValidationUtils.requireNonBlank(codeType, "codeType", ENTITY);
         var type = typeDocumentService.findTypeDocumentByCode(codeType);

@@ -22,8 +22,8 @@ public class ConcerneRequestDTO {
     @Schema(name = "type", description = "Le type ")
     TypeConcerne type;
 
-    @Schema(name = "numero", description = "Le numéro")
-    String numero;
+    @Schema(name = "telephone", description = "Le numéro téléphone")
+    String telephone;
 
     @Schema(name = "regionSocial", description = "La region socila")
     String regionSocial;

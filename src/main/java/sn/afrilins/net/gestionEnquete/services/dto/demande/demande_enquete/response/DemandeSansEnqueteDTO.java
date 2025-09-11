@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.concerne.response.ConcerneDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.etat_demande.response.EtatDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.UtilisateurDTO;
 

@@ -75,4 +75,6 @@ DemandeEnqueteService {
 
     List<DemandeSerieDTO> getEvolutionDemandes(Long utilisateurId, LocalDate date);
 
+    DemandeEnqueteDTO updateDemandeEnqueteAvecDocuments(Long id, DemandeEnqueteUpdateRequestDTO dto, MultipartFile[] files);
+
 }

@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.controllers.enquete;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,13 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EvenementCalendrierDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.StatistiqueCalendrierDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.EvenementCalendrierRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.response.EvenementCalendrierDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.response.StatistiqueCalendrierDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.request.EvenementCalendrierRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EvenementCalendrierService;
 
 import java.time.LocalDate;
 
+@Hidden
 @RestController
 @RequestMapping("/v1/api/evenement/calendrier")
 @Tag(name = "/v1/api/evenement/calendrier", description = "EvenementCalendrier controller")
