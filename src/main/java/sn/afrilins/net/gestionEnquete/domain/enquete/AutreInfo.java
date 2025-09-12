@@ -38,6 +38,10 @@ public class AutreInfo {
     @Column(name = "importance", nullable = false)
     String importance;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "enquete_id", nullable = false)
+    private Enquete enquete;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     LocalDateTime createdAt;

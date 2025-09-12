@@ -3,6 +3,7 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
@@ -88,4 +89,6 @@ public interface EnqueteService {
     EnqueteStatsDTO getStatsEtat(Long utilisateurId);
 
     EnqueteDTO assignerEnqueteur(Long enqueteId, EnqueteAssignationRequestDTO dto);
+
+    EnqueteAllDTO findEnqueteByIdAll(Long enqueteId);
 }

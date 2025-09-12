@@ -44,6 +44,11 @@ public class Conclusion {
     @Column(name = "date_validation")
     LocalDateTime dateValidation;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "enquete_id", nullable = false)
+    Enquete enquete;
+
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     LocalDateTime createdAt;

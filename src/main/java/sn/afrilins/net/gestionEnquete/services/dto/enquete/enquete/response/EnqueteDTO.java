@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(name = "enquete", description = "Le modèle d'enquête sans sa demande associée")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Schema(name = "Enquete", description = "Le modèle d'enquête sans sa demande associée")
+@FieldDefaults(level = AccessLevel.PROTECTED)
 public class EnqueteDTO {
 
     @Schema(description = "L'identifiant du modele")

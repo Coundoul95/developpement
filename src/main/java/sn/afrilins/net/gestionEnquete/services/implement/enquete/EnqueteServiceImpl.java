@@ -17,11 +17,13 @@ import sn.afrilins.net.gestionEnquete.repository.demande.DemandeEnqueteRepositor
 import sn.afrilins.net.gestionEnquete.repository.enquete.EnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteStatsDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
+import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteAllMapper;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteAvecDemandeMapper;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteMapper;
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
@@ -45,6 +47,7 @@ public class EnqueteServiceImpl implements EnqueteService {
     final EnqueteMapper enqueteMapper;
     final EnqueteAvecDemandeMapper enqueteAvecDemandeMapper;
     final UtilisateurRepository utilisateurRepository;
+    final EnqueteAllMapper enqueteAllMapper;
 
     static final String ETAT_EN_ATTENTE = "00";
     static final String ETAT_EN_COURS = "01";
@@ -130,10 +133,7 @@ public class EnqueteServiceImpl implements EnqueteService {
         ValidationUtils.requireMinLength(nouvelEtatCode, 2, "etat", ENTITY);
         var enquete = getEnqueteOrThrow(enqueteId);
         updateEtat(enquete, nouvelEtatCode);
-        System.out.println("Test date début: " + enquete.getDateDebut());
-        var test = enqueteMapper.toDto(enqueteRepository.save(enquete));
-        System.out.println(test);
-        return test;
+        return enqueteMapper.toDto(enqueteRepository.save(enquete));
     }
 
     @Override
@@ -178,6 +178,7 @@ public class EnqueteServiceImpl implements EnqueteService {
                 .annulees(counts.getOrDefault(ETAT_ANNULEE, 0L))
                 .echeances(enqueteRepository.countEcheancesProches(utilisateurId))
                 .urgent(enqueteRepository.countEnquetesUrgentes(utilisateurId))
+                .progression(enqueteRepository.averageProgression(utilisateurId))
                 .total(total)
                 .build();
     }
@@ -208,6 +209,11 @@ public class EnqueteServiceImpl implements EnqueteService {
         }
 
         return enqueteMapper.toDto(enqueteRepository.save(enquete));
+    }
+
+    @Override
+    public EnqueteAllDTO findEnqueteByIdAll(Long enqueteId) {
+        return enqueteAllMapper.toDto(getEnqueteOrThrow(enqueteId));
     }
 
     private void updateEtat(Enquete entity, String etatCode) {

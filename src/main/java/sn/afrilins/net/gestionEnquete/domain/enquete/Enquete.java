@@ -15,6 +15,8 @@ import sn.afrilins.net.gestionEnquete.util.ReferenceGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -81,6 +83,21 @@ public class Enquete {
     @JoinColumn(name = "enqueteur_id", nullable = true)
     @JsonIgnoreProperties("enquetesAssignees")
     Utilisateur enqueteur;
+
+    @ManyToMany(mappedBy = "enquetes")
+    @JsonIgnoreProperties("enquetes")
+    @Builder.Default
+    List<SourceInfo> sourcesInfo = new ArrayList<>();
+
+    @OneToMany(mappedBy = "enquete", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @JsonIgnoreProperties("enquete")
+    List<AutreInfo> autresInfos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "enquete", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @JsonIgnoreProperties("enquete")
+    List<Conclusion> conclusions = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

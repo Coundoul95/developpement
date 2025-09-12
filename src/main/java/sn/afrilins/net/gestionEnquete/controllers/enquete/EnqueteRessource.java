@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
@@ -208,6 +209,20 @@ public class EnqueteRessource {
         log.info("Récupération de l'enquête ID {}", id);
         return enqueteService.findEnqueteById(id);
     }
+
+    @Operation(summary = "Récupérer une enquête par ID avec tous ces données", description = "Retourne une enquête via son identifiant")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Succès"),
+            @ApiResponse(responseCode = "404", description = "Enquête non trouvée"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @GetMapping("/{id}/all")
+    @ResponseStatus(HttpStatus.OK)
+    public EnqueteAllDTO getEnqueteByIdAll(@PathVariable Long id) {
+        log.info("Récupération de l'enquête ID {}", id);
+        return enqueteService.findEnqueteByIdAll(id);
+    }
+
 
     @Operation(summary = "Supprimer une enquête", description = "Supprime une enquête par son identifiant")
     @ApiResponses({

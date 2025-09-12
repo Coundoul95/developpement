@@ -15,7 +15,7 @@ import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.respo
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(name = "EnqueteAvecDemande", description = "Le modèle d'enquête avec sa demande associée")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PROTECTED)
 public class EnqueteAvecDemandeDTO extends EnqueteDTO {
 
     @Schema(description = "La demande")
