@@ -8,21 +8,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.EtatEnquete;
-import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.demande.DemandeEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatEnqueteRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.DocumentRepository;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.TypeDocumentRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteDocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteStatsDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
+import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteAllMapper;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteAvecDemandeMapper;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.EnqueteMapper;
@@ -48,6 +54,9 @@ public class EnqueteServiceImpl implements EnqueteService {
     final EnqueteAvecDemandeMapper enqueteAvecDemandeMapper;
     final UtilisateurRepository utilisateurRepository;
     final EnqueteAllMapper enqueteAllMapper;
+    final DocumentRepository documentRepository;
+    final TypeDocumentRepository typeDocumentRepository;
+    final DocumentStorageService documentStorageService;
 
     static final String ETAT_EN_ATTENTE = "00";
     static final String ETAT_EN_COURS = "01";
@@ -121,8 +130,8 @@ public class EnqueteServiceImpl implements EnqueteService {
             String type,
             Integer priorite,
             Boolean urgent,
-            Pageable pageable)  {
-        return enqueteRepository.readAllEnquete(etatCode, progression, dateDebut, dateFin, assignee, enqueteurId, search, type,priorite, urgent, pageable).map(enqueteMapper::toDto);
+            Pageable pageable) {
+        return enqueteRepository.readAllEnquete(etatCode, progression, dateDebut, dateFin, assignee, enqueteurId, search, type, priorite, urgent, pageable).map(enqueteMapper::toDto);
     }
 
 
@@ -194,17 +203,17 @@ public class EnqueteServiceImpl implements EnqueteService {
             throw new CustomBadRequestException(new BadRequestAlertException(
                     "Enquête déjà assigné", ENTITY, "enquteAssigné"));
         }
-        System.out.println(" Code de l'état de l'enquête "+enquete.getEtat().getCode());
-        if(!Objects.equals(enquete.getEtat().getCode(), ETAT_EN_ATTENTE)){
+        System.out.println(" Code de l'état de l'enquête " + enquete.getEtat().getCode());
+        if (!Objects.equals(enquete.getEtat().getCode(), ETAT_EN_ATTENTE)) {
             throw new CustomBadRequestException(new BadRequestAlertException(
                     "On ne peut pas assigné un enquêteur à cette enquête parce que l'enquête est déjà démarrer", ENTITY, "enquteAssigné"));
         }
         enquete.setEnqueteur(enqueteur);
         enquete.setDateAssignation(LocalDateTime.now());
-        if(Objects.nonNull(dto.getInstruction())){
+        if (Objects.nonNull(dto.getInstruction())) {
             enquete.setInstruction(dto.getInstruction());
         }
-        if(Objects.nonNull(dto.getDateLimite())){
+        if (Objects.nonNull(dto.getDateLimite())) {
             enquete.setDateLimite(dto.getDateLimite());
         }
 
@@ -216,10 +225,71 @@ public class EnqueteServiceImpl implements EnqueteService {
         return enqueteAllMapper.toDto(getEnqueteOrThrow(enqueteId));
     }
 
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public EnqueteAllDTO ajouterDocuments(Long enqueteId,  MultipartFile[] fichiers, EnqueteDocumentRequestDTO request) {
+        Enquete enquete = getEnqueteOrThrow(enqueteId);
+
+        // 1. Vérifier si l'enquête est assigné
+        if (Objects.isNull(enquete.getEnqueteur())) {
+            throw new CustomBadRequestException(
+                    new BadRequestAlertException("enquete_non_assigne", ENTITY, "enquete_non_assigne")
+            );
+        }
+
+        // 2. Vérifier si l'enquête est en cours
+        if(!enquete.getEtat().getCode().equals(ETAT_EN_COURS)){
+            throw new CustomBadRequestException(
+                    new BadRequestAlertException("L'enquete n'est pas en cours", ENTITY, "enquete_non_encours")
+            );
+        }
+
+        // 3. Associer documents existants
+        if (request.getIds() != null && !request.getIds().isEmpty()) {
+            List<Document> existingDocs = documentRepository.findAllById(request.getIds());
+
+            existingDocs.stream()
+                    .filter(doc -> Objects.equals(doc.getUtilisateur().getId(), enquete.getEnqueteur().getId()))
+                    .forEach(enquete.getDocuments()::add);
+        }
+
+
+
+
+        // 4. Gérer upload de nouveaux fichiers
+        if (fichiers != null && fichiers.length > 0) {
+            TypeDocument type = typeDocumentRepository.findFirstByCode("PJENQ")
+                    .orElseGet(() -> {
+                        log.info("Type document 'PJENQ' not trouvé. Création...");
+                        return typeDocumentRepository.save(TypeDocument.builder()
+                                .code("PJENQ")
+                                .libelle("Pièce jointe enquête")
+                                .build());
+                    });
+
+            for (MultipartFile fichier : fichiers) {
+                var uploadedDoc = documentStorageService.handleUpload(
+                        fichier,
+                        fichier.getOriginalFilename(),
+                        "Pièce jointe enquête",
+                        type.getCode(),
+                        enquete.getEnqueteur().getId()
+                );
+
+                Document docEntity = documentRepository.getById(uploadedDoc.getId());
+                enquete.getDocuments().add(docEntity);
+            }
+        }
+
+        return enqueteAllMapper.toDto(enqueteRepository.save(enquete));
+    }
+
+
     private void updateEtat(Enquete entity, String etatCode) {
 
-        if(Objects.isNull(entity.getEnqueteur())){
-            throw  new CustomBadRequestException(new BadRequestAlertException("L'enquête n'est pas encore assigné donc on ne peut pas changer l'état", ENTITY, "enqueteur_manquant"));
+        if (Objects.isNull(entity.getEnqueteur())) {
+            throw new CustomBadRequestException(new BadRequestAlertException("L'enquête n'est pas encore assigné donc on ne peut pas changer l'état", ENTITY, "enqueteur_manquant"));
         }
 
         String currentCode = entity.getEtat().getCode();
@@ -279,7 +349,8 @@ public class EnqueteServiceImpl implements EnqueteService {
     }
 
 
-    private Enquete getEnqueteOrThrow(Long id) {
+    @Override
+    public Enquete getEnqueteOrThrow(Long id) {
         return enqueteRepository.findById(id)
                 .orElseThrow(() -> new CustomBadRequestException(
                         new BadRequestAlertException("enquete_introuvable", ENTITY, "id_inexistant")));

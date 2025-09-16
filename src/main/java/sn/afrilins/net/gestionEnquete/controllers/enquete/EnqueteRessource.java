@@ -2,6 +2,9 @@ package sn.afrilins.net.gestionEnquete.controllers.enquete;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,8 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.request.DemandeEnqueteRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteDocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
@@ -21,6 +28,7 @@ import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/enquete")
@@ -268,6 +276,31 @@ public class EnqueteRessource {
             @RequestParam("progression") int progression) {
         log.info("Mise à jour de la progression de l'enquête ID {} à {}%", enqueteId, progression);
         return enqueteService.updateProgression(enqueteId, progression);
+    }
+
+
+
+    @Operation(
+            summary = "Associer des documents à une enquête en cours",
+            description = "Ajoute de nouveaux documents uploadés et/ou associe des documents déjà existants à une enquête"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Documents associés avec succès"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "404", description = "Enquête ou document non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @PatchMapping(value = "/{enqueteId}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public EnqueteDTO ajouterDocumentsAEnquete(
+            @PathVariable Long enqueteId,
+            @RequestPart(name = "fichiers", required = false) MultipartFile[] fichiers,
+//            @RequestPart(name = "documentIds", required = false) List<Long> documentIds
+            @RequestPart(value = "document", required = true) @Valid EnqueteDocumentRequestDTO dto
+
+    ) {
+
+        return enqueteService.ajouterDocuments(enqueteId, fichiers, dto);
     }
 
 

@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.domain.enquete;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -32,15 +33,29 @@ public class AutreInfo {
     @Column(name = "categorie", nullable = false)
     String categorie;
 
-    @Column(name = "description", columnDefinition = "CLOB")
+    @Column(name="objet", nullable = false)
+    String objet;
+
+    @Lob
+    @Column(name = "description")
     String description;
 
     @Column(name = "importance", nullable = false)
-    String importance;
+    @Builder.Default
+    int importance = 3;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "enquete_id", nullable = false)
-    private Enquete enquete;
+    Enquete enquete;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "etat_autre_info_id", nullable = false)
+    @JsonIgnoreProperties("autre_infos")
+    EtatAutreInfo etat;
+
+    @Column(name = "date_enregistrement")
+    @Builder.Default
+    LocalDateTime dateEnregistrement = LocalDateTime.now();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

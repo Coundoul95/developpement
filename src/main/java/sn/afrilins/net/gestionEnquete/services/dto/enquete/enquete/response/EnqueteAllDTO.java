@@ -8,8 +8,10 @@ import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.respo
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.autre_info.response.AutreInfoDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.conclusion.response.ConclusionDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.SourceInfoDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
 
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder(toBuilder = true)
@@ -20,7 +22,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EnqueteAllDTO extends EnqueteDTO{
 
-
     @Schema(description = "La demande")
     DemandeSansEnqueteDTO demande;
 
@@ -28,9 +29,12 @@ public class EnqueteAllDTO extends EnqueteDTO{
     List<AutreInfoDTO> autresInfos;
 
     @Schema(description = "La liste des sources d'information")
-    List<SourceInfoDTO> sourcesInfo;
+    List<SourceInfoDTO> sourcesInfos;
 
     @Schema(description = "La liste des conclusions")
     List<ConclusionDTO> conclusions;
+
+    @Schema(description = "La liste des documents")
+    Set<DocumentDTO> documents;
 
 }

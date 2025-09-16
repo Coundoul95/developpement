@@ -10,13 +10,16 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 import sn.afrilins.net.gestionEnquete.util.ReferenceGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -87,7 +90,7 @@ public class Enquete {
     @ManyToMany(mappedBy = "enquetes")
     @JsonIgnoreProperties("enquetes")
     @Builder.Default
-    List<SourceInfo> sourcesInfo = new ArrayList<>();
+    List<SourceInfo> sourcesInfos = new ArrayList<>();
 
     @OneToMany(mappedBy = "enquete", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -98,6 +101,17 @@ public class Enquete {
     @Builder.Default
     @JsonIgnoreProperties("enquete")
     List<Conclusion> conclusions = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "enquete_document",
+            joinColumns = @JoinColumn(name = "enquete_id"),
+            inverseJoinColumns = @JoinColumn(name = "document_id")
+    )
+    @JsonIgnoreProperties("enquetes")
+    @Builder.Default
+    Set<Document> documents = new HashSet<>();
+
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

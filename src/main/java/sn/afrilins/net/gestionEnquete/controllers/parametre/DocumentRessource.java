@@ -21,7 +21,7 @@ import sn.afrilins.net.gestionEnquete.util.AppUtils;
 
 import javax.validation.Valid;
 
-@Hidden
+//@Hidden
 @RestController
 @RequestMapping("/v1/api/documents")
 @Tag(name = "/v1/api/documents", description = "Document, controllers")

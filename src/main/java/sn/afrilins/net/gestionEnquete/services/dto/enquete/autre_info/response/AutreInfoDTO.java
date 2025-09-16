@@ -24,12 +24,24 @@ public class AutreInfoDTO {
     @Schema(description = "La catégorie")
     String categorie;
 
+    @Schema(description = "L'objet")
+    String objet;
+
     @Schema(description = "La description")
     String description;
 
     @Schema(description = "L'importance")
-    String importance;
+    int importance;
+
+    @Schema(description = "l'état de la source")
+    EtatAutreInfoDTO etat;
+
+    @Schema(description = "La date d'enregistrement de la source")
+    LocalDateTime dateEnregistrement;
 
     @Schema(description = "La date de création")
     LocalDateTime createdAt;
+
+    @Schema(description = "La date de mis à jour")
+    LocalDateTime updatedAt;
 }

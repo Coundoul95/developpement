@@ -9,6 +9,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
+import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 
 import javax.persistence.*;
@@ -70,6 +71,12 @@ public class Document {
     @JsonIgnoreProperties("documents")
     @Builder.Default
     List<SourceInfo> sourceInfos = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "documents")
+    @JsonIgnoreProperties("documents")
+    @Builder.Default
+    List<Enquete> enquetes = new ArrayList<>();
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "utilisateur_id", nullable = false)

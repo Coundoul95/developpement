@@ -12,13 +12,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.autre_info.request.AutreInfoUpdateRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.autre_info.response.AutreInfoDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.autre_info.request.AutreInfoRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.AutreInfoService;
 
 import javax.validation.Valid;
 
-@Hidden
+//@Hidden
 @RestController
 @RequestMapping("/v1/api/autre/info")
 @Tag(name = "/v1/api/autre/info", description = "AutreInfo, controller")
@@ -53,9 +54,8 @@ public class AutreInfoRessource {
     public AutreInfoDTO updateAutreInfo(
             @Parameter(description = "Identifiant de l'autre info", required = true)
             @PathVariable Long id,
-            @Valid @RequestBody AutreInfoDTO autreInfo) {
-        autreInfo.setId(id);
-        return autreInfoService.updateAutreInfo(autreInfo);
+            @Valid @RequestBody AutreInfoUpdateRequestDTO request) {
+        return autreInfoService.updateAutreInfo(id, request);
     }
 
     @Operation(summary = "Liste des autres infos", description = "Retourne la liste paginée des autres infos")
@@ -68,9 +68,12 @@ public class AutreInfoRessource {
     public Page<AutreInfoDTO> readAutreInfos(
             Pageable pageable,
             @Parameter(description = "La catégorie") @RequestParam(required = false) String categorie,
+            @Parameter(description = "Recherche global") @RequestParam(required = false) String search,
+            @Parameter(description = "L'objet") @RequestParam(required = false) String objet,
             @Parameter(description = "La description") @RequestParam(required = false) String description,
-            @Parameter(description = "L'importance") @RequestParam(required = false) String importance) {
-        return autreInfoService.readAllAutreInfos(categorie, description, importance, pageable);
+            @Parameter(description = "le code de l'état") @RequestParam(required = false) String codeEtat,
+            @Parameter(description = "L'importance") @RequestParam(required = false) Integer importance) {
+        return autreInfoService.readAllAutreInfos(categorie, objet, description, importance, codeEtat, search, pageable);
     }
 
     @Operation(summary = "Rechercher une autre info par ID", description = "Retourne une autre info à partir de son identifiant")
