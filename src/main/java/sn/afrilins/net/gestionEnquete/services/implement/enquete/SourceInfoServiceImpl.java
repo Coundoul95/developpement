@@ -22,7 +22,7 @@ import sn.afrilins.net.gestionEnquete.repository.parametrage.TypeDocumentReposit
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.SourceInfoDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoUpdateRequestDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.SourceInfoService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
 import sn.afrilins.net.gestionEnquete.services.mapper.enquete.SourceInfoMapper;

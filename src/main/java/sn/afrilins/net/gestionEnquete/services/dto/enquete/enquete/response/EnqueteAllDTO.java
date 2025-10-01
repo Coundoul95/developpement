@@ -8,7 +8,7 @@ import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.respo
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.autre_info.response.AutreInfoDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.conclusion.response.ConclusionDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.SourceInfoDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
 
 import java.util.List;
 import java.util.Set;

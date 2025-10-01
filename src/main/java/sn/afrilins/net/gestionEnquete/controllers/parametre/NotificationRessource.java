@@ -12,10 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationStatsDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.NotificationUpdateDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.NotificationRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.notification.response.NotificationDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.notification.response.NotificationStatsDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.notification.request.NotificationUpdateDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.request.NotificationRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.NotificationService;
 
 import javax.validation.Valid;

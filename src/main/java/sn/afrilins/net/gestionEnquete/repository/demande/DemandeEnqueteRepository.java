@@ -8,13 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import sn.afrilins.net.gestionEnquete.domain.demande.DemandeEnquete;
-import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
 import sn.afrilins.net.gestionEnquete.domain.demande.QDemandeEnquete;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 public interface DemandeEnqueteRepository extends JpaRepository<DemandeEnquete, Long>, QuerydslPredicateExecutor<DemandeEnquete> {
 

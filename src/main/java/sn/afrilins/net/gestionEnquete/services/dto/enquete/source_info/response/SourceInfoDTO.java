@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.UtilisateurDTO;
 
 import java.time.LocalDateTime;

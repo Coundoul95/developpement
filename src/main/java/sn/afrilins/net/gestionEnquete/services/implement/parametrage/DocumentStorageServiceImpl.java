@@ -12,10 +12,10 @@ import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDebugInfo;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentViewUrlDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.DocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDebugInfo;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentViewUrlDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.request.DocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocumentService;
@@ -25,7 +25,6 @@ import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.UUID;
 
 @Service

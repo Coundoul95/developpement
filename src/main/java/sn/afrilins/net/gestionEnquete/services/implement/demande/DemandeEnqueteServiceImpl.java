@@ -29,7 +29,7 @@ import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurReposito
 import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.response.*;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.request.DemandeEnqueteRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.request.DemandeEnqueteUpdateRequestDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.demande.ConcerneService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.demande.DemandeEnqueteService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.EnqueteService;
