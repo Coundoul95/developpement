@@ -1,11 +1,13 @@
 package sn.afrilins.net.gestionEnquete.repository.enquete;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import sn.afrilins.net.gestionEnquete.domain.enquete.QEnquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.QSourceInfo;
 import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 
@@ -20,52 +22,72 @@ public interface SourceInfoRepository extends JpaRepository<SourceInfo, Long>, Q
     /**
      * Recherche paginée des sources d'information selon plusieurs critères optionnels.
      *
-     * @param utilisateurId     Identifiant de l'utilisateur associé à la source.
-     * @param nom               Nom (ou une partie du nom) de la source.
-     * @param niveauFiabilite   Niveau de fiabilité de la source (filtrage partiel, insensible à la casse).
-     * @param etat              Le code de l'état de la source.
-     * @param type              Le code du type de la source.
-     * @param search            Terme de recherche global appliqué sur plusieurs champs (nom, fiabilité, commentaires, description).
-     * @param pageable          Objet de pagination et de tri.
-     * @return                  Page de résultats correspondant aux critères spécifiés.
+     * @param utilisateurId Identifiant de l'utilisateur associé à la source.
+     * @param nom           Nom (ou une partie du nom) de la source.
+     * @param fiabilite     Niveau de fiabilité de la source (filtrage partiel, insensible à la casse).
+     * @param codeEtat      Le code de l'état de la source.
+     * @param codeType      Le code du type de la source.
+     * @param search        Terme de recherche global appliqué sur plusieurs champs (nom, fiabilité, commentaires, description).
+     * @param pageable      Objet de pagination et de tri.
+     * @return Page de résultats correspondant aux critères spécifiés.
      */
     default Page<SourceInfo> readAllSourceInfo(
             Long utilisateurId,
             String nom,
-            String niveauFiabilite,
-            String etat,
-            String type,
+            Integer fiabilite,
+            String codeEtat,
+            String codeType,
+            Long enqueteId,
+            boolean excludeEnquete,
             String search,
             Pageable pageable) {
 
         QSourceInfo source = QSourceInfo.sourceInfo;
+        QEnquete enquete = QEnquete.enquete;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (utilisateurId != null) {
             builder.and(source.utilisateur.id.eq(utilisateurId));
         }
 
-        if (etat != null) {
-            builder.and(source.etat.code.eq(etat));
+        if (codeEtat != null) {
+            builder.and(source.etat.code.eq(codeEtat));
         }
 
-        if (type != null) {
-            builder.and(source.type.code.eq(type));
+        if (codeType != null) {
+            builder.and(source.type.code.eq(codeType));
         }
-
 
         if (nom != null && !nom.isBlank()) {
             builder.and(source.nom.containsIgnoreCase(nom));
         }
 
-        if (niveauFiabilite != null && !niveauFiabilite.isBlank()) {
-            builder.and(source.niveauFiabilite.containsIgnoreCase(niveauFiabilite));
+        if (fiabilite != null) {
+            builder.and(source.fiabilite.eq(fiabilite));
+        }
+
+        // 🔹 Gestion enquêtes
+        if (enqueteId != null) {
+            if (excludeEnquete) {
+//                // tous les documents qui ne sont liés à aucune enquête
+//                builder.and(source.enquetes.isEmpty());
+                // sources qui ne sont PAS liées à cette enquête précise
+                builder.and(
+                        JPAExpressions.selectOne()
+                                .from(enquete)
+                                .where(enquete.id.eq(enqueteId)
+                                        .and(enquete.in(source.enquetes)))
+                                .notExists()
+                );
+            } else {
+                // tous les documents liés à cette enquête précise
+                builder.and(source.enquetes.any().id.eq(enqueteId));
+            }
         }
 
         if (search != null && !search.isBlank()) {
             builder.andAnyOf(
                     source.nom.containsIgnoreCase(search),
-                    source.niveauFiabilite.containsIgnoreCase(search),
                     source.commentaires.containsIgnoreCase(search),
                     source.description.containsIgnoreCase(search)
             );

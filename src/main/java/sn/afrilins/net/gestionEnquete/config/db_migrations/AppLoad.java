@@ -8,9 +8,13 @@ import org.springframework.stereotype.Component;
 import sn.afrilins.net.gestionEnquete.domain.enquete.EtatAutreInfo;
 import sn.afrilins.net.gestionEnquete.domain.enquete.EtatEnquete;
 import sn.afrilins.net.gestionEnquete.domain.demande.EtatDemande;
+import sn.afrilins.net.gestionEnquete.domain.enquete.EtatSourceInfo;
+import sn.afrilins.net.gestionEnquete.domain.enquete.TypeSource;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatAutreInfoRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.demande.EtatDemandeRepository;
+import sn.afrilins.net.gestionEnquete.repository.enquete.EtatSourceInfoRepository;
+import sn.afrilins.net.gestionEnquete.repository.enquete.TypeSourceRepository;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +24,8 @@ public class AppLoad implements ApplicationRunner {
     private final EtatAutreInfoRepository etatAutreInfoRepository;
     private final EtatEnqueteRepository etatEnqueteRepository;
     private final EtatDemandeRepository etatDemandeRepository;
+    private final EtatSourceInfoRepository etatSourceInfoRepository;
+    private final TypeSourceRepository typeSourceRepository;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -51,6 +57,26 @@ public class AppLoad implements ApplicationRunner {
         createEtatDemandeIfNotExists("02", "Rejeter");
         createEtatDemandeIfNotExists("03", "En complèment");
         createEtatDemandeIfNotExists("04", "Annuler");
+
+        // -------------------------
+        // ÉTATS SOURCE INFO
+        // -------------------------
+        createEtatSourceInfoIfNotExists("00", "En attente de validation");
+        createEtatSourceInfoIfNotExists("01", "Actif");
+        createEtatSourceInfoIfNotExists("02", "Inactif");
+        createEtatSourceInfoIfNotExists("03", "Archivée");
+        createEtatSourceInfoIfNotExists("04", "Invalide / Non fiable");
+
+
+        // -------------------------
+        // TYPES SOURCE
+        // -------------------------
+        createTypeSourceIfNotExists("TEMOIN", "Déclaration de témoin");
+        createTypeSourceIfNotExists("DOCUMENT", "Document officiel");
+        createTypeSourceIfNotExists("OBSERVATION", "Observation terrain");
+        createTypeSourceIfNotExists("NUMERIQUE", "Source numérique / en ligne");
+        createTypeSourceIfNotExists("INTERNE", "Source interne");
+        createTypeSourceIfNotExists("EXTERNE", "Source externe");
 
         log.info("=== Initialisation terminée ===");
     }
@@ -84,6 +110,30 @@ public class AppLoad implements ApplicationRunner {
             log.info("Création EtatDemande [{} - {}]", code, libelle);
             return etatDemandeRepository.save(
                     EtatDemande.builder()
+                            .code(code)
+                            .libelle(libelle)
+                            .build()
+            );
+        });
+    }
+
+    private void createEtatSourceInfoIfNotExists(String code, String libelle) {
+        etatSourceInfoRepository.findFirstByCode(code).orElseGet(() -> {
+            log.info("Création EtatSourceInfo [{} - {}]", code, libelle);
+            return etatSourceInfoRepository.save(
+                    EtatSourceInfo.builder()
+                            .code(code)
+                            .libelle(libelle)
+                            .build()
+            );
+        });
+    }
+
+    private void createTypeSourceIfNotExists(String code, String libelle) {
+        typeSourceRepository.findFirstByCode(code).orElseGet(() -> {
+            log.info("Création TypeSource [{} - {}]", code, libelle);
+            return typeSourceRepository.save(
+                    TypeSource.builder()
                             .code(code)
                             .libelle(libelle)
                             .build()

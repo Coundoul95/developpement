@@ -127,4 +127,10 @@ public class Enquete {
             reference = ReferenceGenerator.generateReference("ENQ");
         }
     }
+
+    public void addDocument(Document document) {
+        this.documents.add(document);
+        document.getEnquetes().add(this); // mise à jour côté inverse
+    }
+
 }

@@ -29,13 +29,13 @@ public class SourceInfoRequestDTO {
     String commentaires;
 
     @Schema(description = "Le niveau de fiabilité", required = true)
-    String niveauFiabilite;
+    int fiabilite;
 
     @Schema(description = "Le code de l'état de la source", required = true)
-    String etat;
+    String codeEtat;
 
     @Schema(description = "Le code du type de la source", required = true)
-    String type;
+    String codeType;
 
     @Schema(description = "L'identifiant de l'utilisateur lié", required = true)
     Long utilisateurId;
@@ -48,4 +48,7 @@ public class SourceInfoRequestDTO {
 
     @Schema(description = "Liste des identifiants des documents associés")
     List<Long> documentIds;
+
+    @Schema(description = "Liste des identifiants des enquêtes associés")
+    List<Long> enqueteIds;
 }

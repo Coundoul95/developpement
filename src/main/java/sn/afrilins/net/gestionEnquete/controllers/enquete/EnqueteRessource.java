@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 import sn.afrilins.net.gestionEnquete.services.dto.demande.demande_enquete.request.DemandeEnqueteRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteDocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteSourceRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
@@ -301,6 +302,26 @@ public class EnqueteRessource {
     ) {
 
         return enqueteService.ajouterDocuments(enqueteId, fichiers, dto);
+    }
+
+    @Operation(
+            summary = "Associer des source d'information à une enquête en cours",
+            description = "Associe des source d'information déjà existants à une enquête"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Source d'information associés avec succès"),
+            @ApiResponse(responseCode = "400", description = "Requête invalide"),
+            @ApiResponse(responseCode = "404", description = "Enquête ou source d'information non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @PatchMapping(value = "/{enqueteId}/sources")
+    @ResponseStatus(HttpStatus.OK)
+    public EnqueteDTO ajouterSourceAEnquete(
+            @PathVariable Long enqueteId,
+            @RequestBody @Valid EnqueteSourceRequestDTO dto
+    ) {
+
+        return enqueteService.ajouterSources(enqueteId , dto);
     }
 
 

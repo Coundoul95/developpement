@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteDocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteSourceRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
@@ -98,4 +99,6 @@ public interface EnqueteService {
     Enquete getEnqueteOrThrow(Long id);
 
     EnqueteAllDTO ajouterDocuments(Long enqueteId, MultipartFile[] fichiers, EnqueteDocumentRequestDTO request);
+
+    EnqueteAllDTO ajouterSources(Long enqueteId, EnqueteSourceRequestDTO request);
 }

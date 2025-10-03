@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.enquete.EtatEnquete;
+import sn.afrilins.net.gestionEnquete.domain.enquete.SourceInfo;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.TypeDocument;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
@@ -18,10 +19,12 @@ import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.demande.DemandeEnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EnqueteRepository;
 import sn.afrilins.net.gestionEnquete.repository.enquete.EtatEnqueteRepository;
+import sn.afrilins.net.gestionEnquete.repository.enquete.SourceInfoRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.DocumentRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.TypeDocumentRepository;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteDocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteSourceRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
@@ -57,6 +60,7 @@ public class EnqueteServiceImpl implements EnqueteService {
     final DocumentRepository documentRepository;
     final TypeDocumentRepository typeDocumentRepository;
     final DocumentStorageService documentStorageService;
+    final SourceInfoRepository sourceInfoRepository;
 
     static final String ETAT_EN_ATTENTE = "00";
     static final String ETAT_EN_COURS = "01";
@@ -231,33 +235,27 @@ public class EnqueteServiceImpl implements EnqueteService {
     public EnqueteAllDTO ajouterDocuments(Long enqueteId,  MultipartFile[] fichiers, EnqueteDocumentRequestDTO request) {
         Enquete enquete = getEnqueteOrThrow(enqueteId);
 
-        // 1. Vérifier si l'enquête est assigné
-        if (Objects.isNull(enquete.getEnqueteur())) {
-            throw new CustomBadRequestException(
-                    new BadRequestAlertException("enquete_non_assigne", ENTITY, "enquete_non_assigne")
-            );
-        }
+        // 1. Véfication de l'enquête
+        verifedEnquete(enquete);
 
-        // 2. Vérifier si l'enquête est en cours
-        if(!enquete.getEtat().getCode().equals(ETAT_EN_COURS)){
-            throw new CustomBadRequestException(
-                    new BadRequestAlertException("L'enquete n'est pas en cours", ENTITY, "enquete_non_encours")
-            );
-        }
-
-        // 3. Associer documents existants
+        // 2. Associer documents existants
         if (request.getIds() != null && !request.getIds().isEmpty()) {
             List<Document> existingDocs = documentRepository.findAllById(request.getIds());
 
+//            existingDocs.stream()
+//                    .filter(doc -> Objects.equals(doc.getUtilisateur().getId(), enquete.getEnqueteur().getId()))
+//                    .forEach(enquete.getDocuments()::add);
+
             existingDocs.stream()
                     .filter(doc -> Objects.equals(doc.getUtilisateur().getId(), enquete.getEnqueteur().getId()))
-                    .forEach(enquete.getDocuments()::add);
+                    .forEach(doc -> {
+                        if (!enquete.getDocuments().contains(doc)) {
+                            enquete.addDocument(doc); // met à jour les deux côtés
+                        }
+                    });
         }
 
-
-
-
-        // 4. Gérer upload de nouveaux fichiers
+        // 3. Gérer upload de nouveaux fichiers
         if (fichiers != null && fichiers.length > 0) {
             TypeDocument type = typeDocumentRepository.findFirstByCode("PJENQ")
                     .orElseGet(() -> {
@@ -285,6 +283,47 @@ public class EnqueteServiceImpl implements EnqueteService {
         return enqueteAllMapper.toDto(enqueteRepository.save(enquete));
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public EnqueteAllDTO ajouterSources(Long enqueteId, EnqueteSourceRequestDTO request) {
+        Enquete enquete = getEnqueteOrThrow(enqueteId);
+
+        // 1. Véfication de l'enquête
+        verifedEnquete(enquete);
+
+        // 2. Associer source d'information existants
+        if (request.getIds() != null && !request.getIds().isEmpty()) {
+            List<SourceInfo> existingSources = sourceInfoRepository.findAllById(request.getIds());
+
+            existingSources.stream()
+                    .filter(source -> Objects.equals(source.getUtilisateur().getId(), enquete.getEnqueteur().getId()))
+                    .forEach(source -> {
+                        if (!enquete.getSourcesInfos().contains(source)) {
+                            source.addEnquete(enquete); // met à jour les 2 côtés
+                        }
+                    });
+
+        }
+
+        return enqueteAllMapper.toDto(enqueteRepository.save(enquete));
+    }
+
+
+    private void verifedEnquete(Enquete enquete){
+        // 1. Vérifier si l'enquête est assigné
+        if (Objects.isNull(enquete.getEnqueteur())) {
+            throw new CustomBadRequestException(
+                    new BadRequestAlertException("enquete_non_assigne", ENTITY, "enquete_non_assigne")
+            );
+        }
+
+        // 2. Vérifier si l'enquête est en cours
+        if(!enquete.getEtat().getCode().equals(ETAT_EN_COURS)){
+            throw new CustomBadRequestException(
+                    new BadRequestAlertException("L'enquete n'est pas en cours", ENTITY, "enquete_non_encours")
+            );
+        }
+    }
 
     private void updateEtat(Enquete entity, String etatCode) {
 

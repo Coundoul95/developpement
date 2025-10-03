@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.SourceInfoDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoUpdateRequestDTO;
@@ -33,14 +35,17 @@ public class SourceInfoRessource {
             @ApiResponse(responseCode = "400", description = "Requête invalide"),
             @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public SourceInfoDTO createSourceInfo(@Valid @RequestBody SourceInfoRequestDTO requestDTO) {
-        return sourceInfoService.createSourceInfo(requestDTO);
+    public SourceInfoDTO createSourceInfo(
+            @RequestPart(value = "source", required = true) @Valid SourceInfoRequestDTO requestDTO,
+            @RequestPart(name = "files", required = false) MultipartFile[] files
+    ) {
+        return sourceInfoService.createSourceInfoWithFiles(requestDTO, files);
     }
 
 
-    @Operation(summary = "Modification d'une source d'information", description = "Met à jour une source d'information existant")
+    @Operation(summary = "Modification d'une source d'information", description = "Met à jour une source d'information existante")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Modification réussie"),
             @ApiResponse(responseCode = "400", description = "Requête invalide"),
@@ -48,15 +53,16 @@ public class SourceInfoRessource {
             @ApiResponse(responseCode = "401", description = "Non autorisé"),
             @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public SourceInfoDTO updateSourceInfo(
             @Parameter(description = "Identifiant de la source d'information", required = true)
             @PathVariable Long id,
-            @Valid @RequestBody SourceInfoUpdateRequestDTO requestDTO) {
-        requestDTO.setId(id);
-        return sourceInfoService.updateSourceInfo(requestDTO);
+            @RequestPart(value = "source", required = true) @Valid SourceInfoRequestDTO requestDTO,
+            @RequestPart(name = "files", required = false) MultipartFile[] files) {
+        return sourceInfoService.updateSourceInfoWithFiles(id, requestDTO, files);
     }
+
 
     @Operation(summary = "Rechercher une source d'information par ID", description = "Retourne une source d'information à partir de son identifiant")
     @ApiResponses(value = {
@@ -97,17 +103,22 @@ public class SourceInfoRessource {
             @Parameter(description = "Identifiant de l'utilisateur")
             @RequestParam(required = false) Long utilisateurId,
             @Parameter(description = "Le code de l'état de la source")
-            @RequestParam(required = false) String etat,
+            @RequestParam(required = false) String codeEtat,
             @Parameter(description = "Le code du type de la source")
-            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String codeType,
             @Parameter(description = "Nom de la source")
             @RequestParam(required = false) String nom,
             @Parameter(description = "Niveau de fiabilité de la source")
-            @RequestParam(required = false) String niveauFiabilite,
+            @RequestParam(required = false) Integer fiabilite,
+            @Parameter(description = "Identifiant de l'enquête")
+            @RequestParam(required = false) Long enqueteId,
+            @Parameter(description = "Exclure les documents liés à une enquête")
+            @RequestParam(defaultValue = "false") boolean excludeEnquete,
             @Parameter(description = "Terme de recherche global (nom, fiabilité, etc.)")
             @RequestParam(required = false) String search
+
     ) {
-        return sourceInfoService.readAllSourceInfo(utilisateurId, nom, niveauFiabilite, etat, type, search, pageable);
+        return sourceInfoService.readAllSourceInfo(utilisateurId, nom, fiabilite, codeEtat, codeType, enqueteId, excludeEnquete, search, pageable);
     }
 
 

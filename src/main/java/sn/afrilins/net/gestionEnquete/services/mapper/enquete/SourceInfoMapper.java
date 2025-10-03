@@ -13,7 +13,7 @@ import sn.afrilins.net.gestionEnquete.util.EntityMapper;
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        uses = { DocumentMapper.class, UtilisateurMapper.class, EtatSourceInfoMapper.class, TypeSourceMapper.class }
+        uses = { DocumentMapper.class, UtilisateurMapper.class, EtatSourceInfoMapper.class, TypeSourceMapper.class, EnqueteMapper.class }
 )
 public interface SourceInfoMapper extends EntityMapper<SourceInfoDTO, SourceInfo> {
 }

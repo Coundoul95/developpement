@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.services.dto.parametrage.UtilisateurDTO;
 
@@ -34,7 +35,7 @@ public class SourceInfoDTO {
     String commentaires;
 
     @Schema(description = "Le niveau de fiabilité")
-    String niveauFiabilite;
+    int fiabilite;
 
     @Schema(description = "L'état de la source d'information")
     EtatSourceInfoDTO etat;
@@ -48,10 +49,20 @@ public class SourceInfoDTO {
     @Schema(description = "Liste des documents associés")
     List<DocumentDTO> documents;
 
+    @Schema(description = "Liste des documents associés")
+    List<EnqueteDTO> enquetes;
+
     @Schema(description = "Date de création", example = "2024-06-30T12:45:30")
     LocalDateTime dateObtention;
 
     @Schema(description = "Date de mis à jour", example = "2024-06-30T12:45:30")
     LocalDateTime dateMiseAJour;
+
+
+    @Schema(description = "Date de création", example = "2024-06-30T12:45:30")
+    LocalDateTime createdAt;
+
+    @Schema(description = "Date de mis à jour", example = "2024-06-30T12:45:30")
+    LocalDateTime updatedAt;
 
 }
