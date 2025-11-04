@@ -2,8 +2,8 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.TypeSourceDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.TypeSourceRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.TypeSourceDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.TypeSourceRequestDTO;
 
 /**
  * Interface pour la gestion des types de source d’information.

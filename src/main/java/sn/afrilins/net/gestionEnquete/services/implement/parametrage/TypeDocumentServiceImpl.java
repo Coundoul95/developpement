@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.parametrage.TypeDocumentRepository;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.TypeDocumentDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.TypeDocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.TypeDocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.request.TypeDocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocumentService;
 import sn.afrilins.net.gestionEnquete.services.mapper.parametrage.TypeDocumentMapper;
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
@@ -106,6 +106,16 @@ public class TypeDocumentServiceImpl implements TypeDocumentService {
                 .map(typeDocumentMapper::toDto)
                 .orElseThrow(() -> new CustomBadRequestException(
                         new BadRequestAlertException("type_document_introuvable", ENTITY, "id_inexistant")));
+    }
+
+    @Override
+    public TypeDocumentDTO findTypeDocumentByCode(String code) {
+        ValidationUtils.requireNonBlank(code, "code", ENTITY);
+        ValidationUtils.requireMinLength(code, 2,"code", ENTITY);
+        return typeDocumentRepository.findFirstByCode(code)
+                .map(typeDocumentMapper::toDto)
+                .orElseThrow( () ->new CustomBadRequestException(
+                        new BadRequestAlertException("type_document_introuvable", ENTITY, "code_inexistant")));
     }
 
     @Override

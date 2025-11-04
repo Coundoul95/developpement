@@ -1,6 +1,7 @@
 package sn.afrilins.net.gestionEnquete.controllers.parametre;
 
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,12 +13,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.TypeDocumentDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.TypeDocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.TypeDocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.request.TypeDocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocumentService;
 
 import javax.validation.Valid;
 
+//@Hidden
 @RestController
 @RequestMapping("/v1/api/type/document")
 @Tag(name = "/v1/api/type/document", description = "typeDocument, controllers")
@@ -83,6 +85,7 @@ public class TypeDocumentRessource {
     }
 
 
+    @Hidden
     @Operation(summary = "Suppression d'un TypeDocument", description = "Suppression d'un TypeDocument, Il prend en entre un identifiant")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Aucun contenu"),

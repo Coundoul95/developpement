@@ -6,19 +6,25 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDebugInfo;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentViewUrlDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.DocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
+import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
+import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
+import sn.afrilins.net.gestionEnquete.repository.parametrage.UtilisateurRepository;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDebugInfo;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentViewUrlDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.request.DocumentRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentService;
 import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.DocumentStorageService;
+import sn.afrilins.net.gestionEnquete.services.interfaces.parametrage.TypeDocumentService;
 import sn.afrilins.net.gestionEnquete.util.AppUtils;
+import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -27,14 +33,22 @@ import java.util.UUID;
 public class DocumentStorageServiceImpl implements DocumentStorageService {
 
     private final DocumentService documentService;
+    private final UtilisateurRepository utilisateurRepository;
+    private  final TypeDocumentService typeDocumentService;
+
     @Value("${app.documents.storage.path}")
     private String documentsStoragePath;
 
     @Value("${app.api.base-path}")
     private String apiBasePath;
 
+    static final String ENTITY = "document";
+
     @Override
-    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId) {
+    @Transactional(rollbackFor = Exception.class)
+    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId, Long utilisateurId) {
+
+        var utilisateur = getUtilisateurOrThrow(utilisateurId);
 
         String extension = AppUtils.getExtension(file.getOriginalFilename());
         int taille = (int) file.getSize();
@@ -54,11 +68,20 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
                 .extension(extension)
                 .taille(taille)
                 .chemin(cheminRelatif)
+                .utilisateurId(utilisateur.getId())
                 .version(1)
                 .typeId(typeId)
                 .build();
 
         return documentService.createDocument(request);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType, Long utilisateurId) {
+        ValidationUtils.requireNonBlank(codeType, "codeType", ENTITY);
+        var type = typeDocumentService.findTypeDocumentByCode(codeType);
+        return handleUpload(file, nom, description, type.getId(), utilisateurId);
     }
 
     @Override
@@ -132,5 +155,9 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
         }
     }
 
-
+    private Utilisateur getUtilisateurOrThrow(Long id) {
+        return utilisateurRepository.findById(id)
+                .orElseThrow(() -> new CustomBadRequestException(
+                        new BadRequestAlertException("utilisateur_introuvable", ENTITY, "utilisateurId_invalide")));
+    }
 }

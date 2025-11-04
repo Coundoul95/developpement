@@ -14,7 +14,15 @@ public interface AutreInfoRepository extends JpaRepository<AutreInfo, Long>, Que
 
     Optional<AutreInfo> findFirstByCategorie(String categorie);
 
-    default Page<AutreInfo> findAllAutreInfo(String categorie, String description, String importance, Pageable pageable){
+    default Page<AutreInfo> findAllAutreInfo(
+            String categorie,
+            String objet,
+            String description,
+            Integer importance,
+            String codeEtat,
+            String search,
+            Pageable pageable) {
+
         var qAutreInfo = QAutreInfo.autreInfo;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -22,13 +30,31 @@ public interface AutreInfoRepository extends JpaRepository<AutreInfo, Long>, Que
             builder.and(qAutreInfo.categorie.containsIgnoreCase(categorie));
         }
 
+        if (objet != null && !objet.isBlank()) {
+            builder.and(qAutreInfo.objet.containsIgnoreCase(objet));
+        }
+
         if (description != null && !description.isBlank()) {
             builder.and(qAutreInfo.description.containsIgnoreCase(description));
         }
 
-        if (importance != null && !importance.isBlank()) {
-            builder.and(qAutreInfo.importance.containsIgnoreCase(importance));
+        if (importance != null) {
+            builder.and(qAutreInfo.importance.eq(importance));
         }
+
+        if (codeEtat != null && !codeEtat.isBlank()) {
+            builder.and(qAutreInfo.etat.code.equalsIgnoreCase(codeEtat));
+        }
+
+        if (search != null && !search.isBlank()) {
+            builder.andAnyOf(
+                    qAutreInfo.categorie.containsIgnoreCase(search),
+                    qAutreInfo.objet.containsIgnoreCase(search),
+                    qAutreInfo.description.containsIgnoreCase(search),
+                    qAutreInfo.etat.libelle.containsIgnoreCase(search)
+            );
+        }
+
         return findAll(builder, pageable);
     }
 }

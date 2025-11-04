@@ -2,7 +2,18 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.EnqueteDTO;
+import org.springframework.web.multipart.MultipartFile;
+import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
+import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteDocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteSourceRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAllDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteAvecDemandeDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.request.EnqueteAssignationRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.enquete.response.EnqueteStatsDTO;
+
+import java.time.LocalDateTime;
 
 public interface EnqueteService {
 
@@ -35,7 +46,7 @@ public interface EnqueteService {
      * @param id l’identifiant de la conclusion
      * @return la enquete trouvée
      */
-    EnqueteDTO findEnqueteById(Long id);
+    EnqueteAvecDemandeDTO findEnqueteById(Long id);
 
     /**
      * Récupère une page de conclusions.
@@ -43,6 +54,51 @@ public interface EnqueteService {
      * @param pageable les informations de pagination
      * @return une page de conclusions
      */
-    Page<EnqueteDTO> readAllEnquete(Pageable pageable);
+    Page<EnqueteAvecDemandeDTO> readAllEnqueteAvecDemande(String etatCode,
+                                                          Integer progression,
+                                                          LocalDateTime dateDebut,
+                                                          LocalDateTime dateFin,
+                                                          Boolean assignee,      // filtrer assignée/non assignée
+                                                          Long enqueteurId,      // filtrer par enquêteur
+                                                          String search,
+                                                          String type,
+                                                          Integer priorite,
+                                                          Boolean urgent,
+                                                          Pageable pageable);
 
+    Page<EnqueteDTO> readAllEnqueteSansDemande(String etatCode,
+                                               Integer progression,
+                                               LocalDateTime dateDebut,
+                                               LocalDateTime dateFin,
+                                               Boolean assignee,      // filtrer assignée/non assignée
+                                               Long enqueteurId,      // filtrer par enquêteur
+                                               String search,
+                                               String type,
+                                               Integer priorite,
+                                               Boolean urgent,
+                                               Pageable pageable);
+
+
+    /**
+     * Change l’état d’une demande d’enquête.
+     *
+     * @param demandeId  l’identifiant de la demande
+     * @param nouvelEtat le nouvel état (enum ou String selon ton choix)
+     * @return la demande mise à jour
+     */
+    EnqueteDTO changerEtatEnquete(Long demandeId, String nouvelEtat);
+
+    EnqueteDTO updateProgression(Long enqueteId, int progression);
+
+    EnqueteStatsDTO getStatsEtat(Long utilisateurId);
+
+    EnqueteDTO assignerEnqueteur(Long enqueteId, EnqueteAssignationRequestDTO dto);
+
+    EnqueteAllDTO findEnqueteByIdAll(Long enqueteId);
+
+    Enquete getEnqueteOrThrow(Long id);
+
+    EnqueteAllDTO ajouterDocuments(Long enqueteId, MultipartFile[] fichiers, EnqueteDocumentRequestDTO request);
+
+    EnqueteAllDTO ajouterSources(Long enqueteId, EnqueteSourceRequestDTO request);
 }

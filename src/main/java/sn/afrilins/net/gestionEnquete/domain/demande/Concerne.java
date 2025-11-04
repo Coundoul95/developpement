@@ -39,8 +39,8 @@ public class Concerne {
     @Column(name = "type", nullable = false)
     TypeConcerne type;
 
-    @Column(name = "numero", unique = true, nullable = false)
-    String numero;
+    @Column(name = "telephone", unique = true, nullable = false)
+    String telephone;
 
     @Column(name = "region_social", nullable = false)
     String regionSocial;

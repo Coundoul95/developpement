@@ -3,9 +3,9 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.SourceInfoDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.SourceInfoRequestDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.SourceInfoUpdateRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.response.SourceInfoDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.source_info.request.SourceInfoUpdateRequestDTO;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -26,7 +26,7 @@ public interface SourceInfoService {
      * @param sourceInfo les nouvelles données de la source d'information
      * @return la source d'information mis à jour
      */
-    SourceInfoDTO updateSourceInfo(SourceInfoUpdateRequestDTO sourceInfo);
+    SourceInfoDTO updateSourceInfo(Long id, SourceInfoRequestDTO sourceInfo);
 
     /**
      * Supprime une source d'information par son identifiant.
@@ -43,7 +43,8 @@ public interface SourceInfoService {
      */
     SourceInfoDTO findSourceInfoById(Long id);
 
-    Page<SourceInfoDTO> readAllSourceInfo(Long utilisateurId, String nom, String niveauFiabilite, String etat, String type, String search, Pageable pageable);
+    Page<SourceInfoDTO> readAllSourceInfo(Long utilisateurId, String nom, Integer fiabilite, String codeEtat, String codeType, Long enqueteId, boolean excludeEnquete, String search, Pageable pageable);
 
-    SourceInfoDTO createSourceInfoWithFiles(@Valid SourceInfoRequestDTO requestDTO, List<MultipartFile> files);
+    SourceInfoDTO createSourceInfoWithFiles(@Valid SourceInfoRequestDTO requestDTO, MultipartFile[] files);
+    SourceInfoDTO updateSourceInfoWithFiles(Long id, SourceInfoRequestDTO requestDTO, MultipartFile[] files);
 }

@@ -38,14 +38,17 @@ public class SourceInfo {
     @Column(unique = true, nullable = false)
     String nom;
 
-    @Column( columnDefinition = "CLOB")
+    @Lob
+    @Column(name = "description")
     String description;
 
-    @Column(columnDefinition = "CLOB")
+    @Lob
+    @Column(name = "commentaires")
     String commentaires;
 
-    @Column(name = "niveau_fiabilite", nullable = false)
-    String niveauFiabilite;
+    @Column(name = "fiabilite", nullable = false)
+    @Builder.Default
+    int fiabilite = 3;
 
     @CreationTimestamp
     @Column(name = "date_obtention")
@@ -72,8 +75,16 @@ public class SourceInfo {
     @JsonIgnoreProperties({"source_info"})
     Utilisateur utilisateur;
 
-//    @OneToMany(mappedBy = "sourceInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-//    List<Document> documents;
+    @ManyToMany
+    @JoinTable(
+            name = "enquete_source_info_link",
+            joinColumns = @JoinColumn(name = "source_info_id"),
+            inverseJoinColumns = @JoinColumn(name = "enquete_id")
+    )
+    @JsonIgnoreProperties("sourcesInfo")
+    @Builder.Default
+    private List<Enquete> enquetes = new ArrayList<>();
+
 
     @ManyToMany
     @JoinTable(
@@ -82,6 +93,7 @@ public class SourceInfo {
             inverseJoinColumns = @JoinColumn(name = "document_id")
     )
     @JsonIgnoreProperties("sourceInfos")
+    @Builder.Default
     private List<Document> documents = new ArrayList<>();
 
     @CreationTimestamp
@@ -92,15 +104,19 @@ public class SourceInfo {
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
+    public void addDocument(Document document) {
+        this.documents.add(document);
+        document.getSourceInfos().add(this); // mise à jour côté inverse
+    }
+
+    public void addEnquete(Enquete enquete) {
+        this.enquetes.add(enquete);
+        enquete.getSourcesInfos().add(this); // mise à jour côté inverse
+    }
+
+    public void removeDocument(Document document) {
+        this.documents.remove(document);
+        document.getSourceInfos().remove(this);
+    }
 }
 
-
-/*
-    @ManyToMany
-    @JoinTable(
-        name = "traitement_document",
-        joinColumns = @JoinColumn(name = "traitement_id"),
-        inverseJoinColumns = @JoinColumn(name = "document_id")
-    )
-    private List<Document> documents = new ArrayList<>();
-*/

@@ -13,8 +13,8 @@ import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
 import sn.afrilins.net.gestionEnquete.exception.BadRequestAlertException;
 import sn.afrilins.net.gestionEnquete.exception.CustomBadRequestException;
 import sn.afrilins.net.gestionEnquete.repository.demande.ConcerneRepository;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.ConcerneDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.request.ConcerneRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.concerne.response.ConcerneDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.concerne.request.ConcerneRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.demande.ConcerneService;
 import sn.afrilins.net.gestionEnquete.services.mapper.demande.ConcerneMapper;
 import sn.afrilins.net.gestionEnquete.util.ValidationUtils;
@@ -34,19 +34,19 @@ public class ConcerneServiceImpl implements ConcerneService {
 
     @Override
     public ConcerneDTO createConcerne(ConcerneRequestDTO dto) {
-
+        log.info("Creating new Concerne: {}", dto);
         ValidationUtils.requireNonNull(dto.getType(), "type", ENTITY);
-        ValidationUtils.requireNonBlank(dto.getNumero(), "numero", ENTITY);
+        ValidationUtils.requireNonBlank(dto.getTelephone(), "numero", ENTITY);
         ValidationUtils.requireNonBlank(dto.getRegionSocial(), "regionSocial", ENTITY);
 
-        concerneRepository.findByNumero(dto.getNumero()).ifPresent(c -> {
+        concerneRepository.findByTelephone(dto.getTelephone()).ifPresent(c -> {
             throw new CustomBadRequestException(
                     new BadRequestAlertException("numero_existe", ENTITY, "numero"));
         });
 
         var entity = Concerne.builder()
                 .type(dto.getType()) // convert enum to string
-                .numero(dto.getNumero())
+                .telephone(dto.getTelephone())
                 .regionSocial(dto.getRegionSocial())
                 .build();
 
@@ -58,14 +58,14 @@ public class ConcerneServiceImpl implements ConcerneService {
 
         ValidationUtils.requirePositiveId(dto.getId(), "id", ENTITY);
         ValidationUtils.requireNonNull(dto.getType(), "type", ENTITY);
-        ValidationUtils.requireNonBlank(dto.getNumero(), "numero", ENTITY);
+        ValidationUtils.requireNonBlank(dto.getTelephone(), "numero", ENTITY);
         ValidationUtils.requireNonBlank(dto.getRegionSocial(), "regionSocial", ENTITY);
 
         var existing = concerneRepository.findById(dto.getId())
                 .orElseThrow(() -> new CustomBadRequestException(
                         new BadRequestAlertException("concerne_introuvable", ENTITY, "id_inexistant")));
 
-        concerneRepository.findByNumero(dto.getNumero())
+        concerneRepository.findByTelephone(dto.getTelephone())
                 .filter(c -> !c.getId().equals(dto.getId()))
                 .ifPresent(c -> {
                     throw new CustomBadRequestException(
@@ -73,7 +73,7 @@ public class ConcerneServiceImpl implements ConcerneService {
                 });
 
         existing.setType(dto.getType());
-        existing.setNumero(dto.getNumero());
+        existing.setTelephone(dto.getTelephone());
         existing.setRegionSocial(dto.getRegionSocial());
 
         return concerneMapper.toDto(concerneRepository.save(existing));
@@ -103,8 +103,8 @@ public class ConcerneServiceImpl implements ConcerneService {
     }
 
     @Override
-    public Page<ConcerneDTO> readAllConcernes(TypeConcerne type, String numero, String regionSocial, Pageable pageable) {
-        return concerneRepository.findAllConcerne(type, numero, regionSocial, pageable)
+    public Page<ConcerneDTO> readAllConcernes(TypeConcerne type, String telephone, String regionSocial, Pageable pageable) {
+        return concerneRepository.findAllConcerne(type, telephone, regionSocial, pageable)
                 .map(concerneMapper::toDto);
     }
 }

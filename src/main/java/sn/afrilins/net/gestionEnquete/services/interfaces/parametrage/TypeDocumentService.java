@@ -2,8 +2,8 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.parametrage;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.TypeDocumentDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.request.TypeDocumentRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.TypeDocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.request.TypeDocumentRequestDTO;
 
 /**
  * Interface pour la gestion des types de documents utilisés dans le système.
@@ -40,6 +40,8 @@ public interface TypeDocumentService {
      * @return le type de document trouvé
      */
     TypeDocumentDTO findTypeDocumentById(Long id);
+
+    TypeDocumentDTO findTypeDocumentByCode(String code);
 
     /**
      * Récupère une page paginée des types de document.

@@ -13,6 +13,7 @@ import sn.afrilins.net.gestionEnquete.domain.audit.AbstractAuditingEntity;
 import sn.afrilins.net.gestionEnquete.domain.enquete.Enquete;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Utilisateur;
+import sn.afrilins.net.gestionEnquete.util.ReferenceGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ import java.util.List;
 //@EntityListeners({AuditingEntityListener.class})
 @Table(name = "DEMANDE_DEMANDE_ENQUETE")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class DemandeEnquete  {
+public class DemandeEnquete {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -37,15 +38,19 @@ public class DemandeEnquete  {
     @SequenceGenerator(name = "SEQ_DEMANDE_DEMANDE_ENQUETE", sequenceName = "SEQ_DEMANDE_DEMANDE_ENQUETE", allocationSize = 1)
     Long id;
 
+    @Lob
     @Column(name = "objet", nullable = false)
     String objet;
 
+    @Lob
     @Column(name = "description")
     String description;
 
     @Column(name = "urgent")
-    Boolean urgent;
+    @Builder.Default
+    Boolean urgent = false;
 
+    @Lob
     @Column(name = "commentaire_validation")
     String commentaireValidation;
 
@@ -62,6 +67,9 @@ public class DemandeEnquete  {
     @Column(name = "date_echeance")
     LocalDateTime dateEcheance;
 
+    @Column(name = "reference", nullable = false, unique = true)
+    String reference;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "concerne_id", nullable = false)
     @JsonIgnoreProperties("demandeEnquetes")
@@ -77,16 +85,17 @@ public class DemandeEnquete  {
     @JsonIgnoreProperties("demandeEnquetes")
     Utilisateur utilisateur;
 
-//    @OneToMany(mappedBy = "demandeEnquete")
-//    @JsonIgnoreProperties("demandeEnquete")
+    //    @OneToMany(mappedBy = "demandeEnquete", cascade = CascadeType.ALL, orphanRemoval = true)
 //    List<Document> documents = new ArrayList<>();
-    @OneToMany(mappedBy = "demandeEnquete", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "demandesEnquete")
+    @JsonIgnoreProperties("demandesEnquete")
+    @Builder.Default
     List<Document> documents = new ArrayList<>();
+
 
     @OneToOne(mappedBy = "demandeEnquete", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JsonIgnoreProperties("demandeEnquete")
     Enquete enquete;
-
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -99,4 +108,17 @@ public class DemandeEnquete  {
     @Version
     @Column(name = "version")
     Long version;
+
+    @PrePersist
+    public void prePersist() {
+        if (reference == null || reference.isEmpty()) {
+            reference = ReferenceGenerator.generateReference("DEM");
+        }
+    }
+
+    public void addDocument(Document document) {
+        this.documents.add(document);
+        document.getDemandesEnquete().add(this);
+    }
+
 }

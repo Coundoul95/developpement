@@ -1,5 +1,6 @@
 package sn.afrilins.net.gestionEnquete.controllers.enquete;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,13 +12,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.TypeEvenementDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.TypeEvenementRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.response.TypeEvenementDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.request.TypeEvenementRequestDTO;
 import sn.afrilins.net.gestionEnquete.services.interfaces.enquete.TypeEvenementService;
 
 import javax.validation.Valid;
 
-
+@Hidden
 @RestController
 @RequestMapping("/v1/api/type/evenement")
 @Tag(name = "/v1/api/type/evenement", description = "TypeEvenement controller")

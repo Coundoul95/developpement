@@ -7,7 +7,7 @@ import java.text.MessageFormat;
 
 public enum TypeConcerne {
     EMPLOYEUR("employeur"),
-    BENEFICIAIRE("bénéficiaire"),
+    BENEFICIAIRE("beneficiaire"),
     TRAVAILLEUR("travailleur");
 
     @JsonValue

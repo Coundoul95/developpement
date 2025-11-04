@@ -3,7 +3,7 @@ package sn.afrilins.net.gestionEnquete.services.mapper.parametrage;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import sn.afrilins.net.gestionEnquete.domain.parametrage.Document;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
 import sn.afrilins.net.gestionEnquete.util.EntityMapper;
 
 @Mapper(

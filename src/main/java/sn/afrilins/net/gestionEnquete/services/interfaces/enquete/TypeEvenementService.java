@@ -2,8 +2,8 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.enquete;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.TypeEvenementDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.enquete.request.TypeEvenementRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.response.TypeEvenementDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.enquete.calendrier.request.TypeEvenementRequestDTO;
 
 public interface TypeEvenementService {
 

@@ -3,8 +3,8 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.demande;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import sn.afrilins.net.gestionEnquete.domain.enume.TypeConcerne;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.ConcerneDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.demande.request.ConcerneRequestDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.concerne.response.ConcerneDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.demande.concerne.request.ConcerneRequestDTO;
 
 
 public interface ConcerneService {
@@ -46,5 +46,5 @@ public interface ConcerneService {
      * @param pageable les informations de pagination
      * @return une page d'états de demande
      */
-    Page<ConcerneDTO> readAllConcernes(TypeConcerne type, String numero, String regionSocial, Pageable pageable);
+    Page<ConcerneDTO> readAllConcernes(TypeConcerne type, String telephone, String regionSocial, Pageable pageable);
 }

@@ -53,7 +53,9 @@ spring:
     rest:
       default-page-size: 200000
       max-page-size: 200000
-
+  jackson:
+    deserialization:
+      accept-empty-string-as-null-object: true
 eureka:
   client:
     registerWithEureka: true

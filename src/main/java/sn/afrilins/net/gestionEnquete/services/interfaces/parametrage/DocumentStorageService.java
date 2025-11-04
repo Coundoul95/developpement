@@ -2,9 +2,9 @@ package sn.afrilins.net.gestionEnquete.services.interfaces.parametrage;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDTO;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentDebugInfo;
-import sn.afrilins.net.gestionEnquete.services.dto.parametrage.DocumentViewUrlDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDTO;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentDebugInfo;
+import sn.afrilins.net.gestionEnquete.services.dto.parametrage.document.response.DocumentViewUrlDTO;
 
 /**
  * Interface définissant les opérations liées à la gestion physique et logique
@@ -21,13 +21,15 @@ public interface DocumentStorageService {
      * @param typeId      L'identifiant du type de document.
      * @return Un objet {@link DocumentDTO} contenant les informations du document enregistré.
      */
-    DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId);
+    DocumentDTO handleUpload(MultipartFile file, String nom, String description, Long typeId, Long utilisateurId);
+
+    DocumentDTO handleUpload(MultipartFile file, String nom, String description, String codeType, Long utilisateurId);
 
     /**
      * Récupère la ressource (fichier) correspondant à un document.
      *
-     * @param documentId       L'identifiant du document.
-     * @param checkIfReadable  Si vrai, vérifie également la lisibilité du fichier.
+     * @param documentId      L'identifiant du document.
+     * @param checkIfReadable Si vrai, vérifie également la lisibilité du fichier.
      * @return La ressource {@link Resource} représentant le fichier du document.
      */
     Resource getDocumentFile(Long documentId, boolean checkIfReadable);
