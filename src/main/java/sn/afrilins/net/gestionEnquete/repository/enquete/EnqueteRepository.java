@@ -64,14 +64,15 @@ public interface EnqueteRepository extends JpaRepository<Enquete, Long>, Queryds
             "WHERE (:utilisateurId IS NULL OR d.utilisateur.id = :utilisateurId)")
     List<Object[]> getStatsEtatEnquete(@Param("utilisateurId") Long utilisateurId);
 
-
     default Page<Enquete> readAllEnquete(
             String etatCode,
             Integer progression,
+            Integer progressionMin,
+            Integer progressionMax,
             LocalDateTime dateDebut,
             LocalDateTime dateFin,
-            Boolean assignee,      // filtrer assignée/non assignée
-            Long enqueteurId,      // filtrer par enquêteur
+            Boolean assignee,
+            Long enqueteurId,
             String search,
             String type,
             Integer priorite,
@@ -84,22 +85,35 @@ public interface EnqueteRepository extends JpaRepository<Enquete, Long>, Queryds
 
         BooleanBuilder predicate = new BooleanBuilder();
 
+        // 🔹 Filtre par état
         if (etatCode != null && !etatCode.isEmpty()) {
             predicate.and(enquete.etat.code.eq(etatCode));
         }
 
+        // 🔹 Filtre par progression exacte
         if (progression != null) {
             predicate.and(enquete.progression.eq(progression));
         }
 
+        // 🔹 Filtre par plage de progression
+        if (progressionMin != null) {
+            predicate.and(enquete.progression.goe(progressionMin)); // >= progressionMin
+        }
+        if (progressionMax != null) {
+            predicate.and(enquete.progression.loe(progressionMax)); // <= progressionMax
+        }
+
+        // 🔹 Filtre par date de début
         if (dateDebut != null) {
-            predicate.and(enquete.dateDebut.goe(dateDebut)); // >= dateDebut
+            predicate.and(enquete.dateDebut.goe(dateDebut));
         }
 
+        // 🔹 Filtre par date de fin
         if (dateFin != null) {
-            predicate.and(enquete.dateFin.loe(dateFin)); // <= dateFin
+            predicate.and(enquete.dateFin.loe(dateFin));
         }
 
+        // 🔹 Filtre assignation
         if (assignee != null) {
             if (assignee) {
                 predicate.and(enquete.enqueteur.isNotNull());
@@ -108,41 +122,48 @@ public interface EnqueteRepository extends JpaRepository<Enquete, Long>, Queryds
             }
         }
 
-        if(priorite != null){
+        // 🔹 Filtre priorité
+        if (priorite != null) {
             predicate.and(enquete.demandeEnquete.priorite.eq(priorite));
         }
 
-        if(urgent!=null){
+        // 🔹 Filtre urgence
+        if (urgent != null) {
             predicate.and(enquete.demandeEnquete.urgent.eq(urgent));
         }
 
+        // 🔹 Filtre enquêteur
         if (enqueteurId != null) {
             predicate.and(enquete.enqueteur.id.eq(enqueteurId));
         }
 
-        if(type != null){
+        // 🔹 Filtre type de concerne
+        if (type != null) {
             predicate.and(enquete.demandeEnquete.concerne.type.eq(TypeConcerne.fromValue(type)));
         }
 
+        // 🔹 Filtre recherche globale
         if (search != null && !search.isEmpty()) {
             BooleanBuilder searchPredicate = new BooleanBuilder();
 
             searchPredicate.or(enquete.reference.containsIgnoreCase(search));
             searchPredicate.or(enquete.instruction.containsIgnoreCase(search));
 
-            // champs liés dans DemandeEnquete
+            // Champs liés dans DemandeEnquete
             searchPredicate.or(enquete.demandeEnquete.reference.containsIgnoreCase(search));
             searchPredicate.or(enquete.demandeEnquete.objet.containsIgnoreCase(search));
             searchPredicate.or(enquete.demandeEnquete.description.containsIgnoreCase(search));
 
-            // champs liés dans Concerne (via DemandeEnquete)
+            // Champs liés dans Concerne (via DemandeEnquete)
             searchPredicate.or(enquete.demandeEnquete.concerne.telephone.containsIgnoreCase(search));
             searchPredicate.or(enquete.demandeEnquete.concerne.regionSocial.containsIgnoreCase(search));
 
             predicate.and(searchPredicate);
         }
 
+        // ✅ Retourne le résultat filtré
         return findAll(predicate, pageable);
     }
+
 
 }

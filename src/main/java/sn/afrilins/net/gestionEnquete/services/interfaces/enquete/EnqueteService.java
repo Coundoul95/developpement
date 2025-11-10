@@ -56,6 +56,8 @@ public interface EnqueteService {
      */
     Page<EnqueteAvecDemandeDTO> readAllEnqueteAvecDemande(String etatCode,
                                                           Integer progression,
+                                                          Integer progressionMin,
+                                                          Integer progressionMax,
                                                           LocalDateTime dateDebut,
                                                           LocalDateTime dateFin,
                                                           Boolean assignee,      // filtrer assignée/non assignée
@@ -68,6 +70,8 @@ public interface EnqueteService {
 
     Page<EnqueteDTO> readAllEnqueteSansDemande(String etatCode,
                                                Integer progression,
+                                               Integer progressionMin,
+                                               Integer progressionMax,
                                                LocalDateTime dateDebut,
                                                LocalDateTime dateFin,
                                                Boolean assignee,      // filtrer assignée/non assignée

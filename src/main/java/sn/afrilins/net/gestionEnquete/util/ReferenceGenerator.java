@@ -39,3 +39,4 @@ public class ReferenceGenerator {
 //        return String.format("%s-%s-%s-%s", prefix, year, monthDay, increment);
 //    }
 }
+// DEM-2025-01-30-GGG27

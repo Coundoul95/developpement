@@ -110,6 +110,8 @@ public class EnqueteServiceImpl implements EnqueteService {
     public Page<EnqueteAvecDemandeDTO> readAllEnqueteAvecDemande(
             String etatCode,
             Integer progression,
+            Integer progressionMin,
+            Integer progressionMax,
             LocalDateTime dateDebut,
             LocalDateTime dateFin,
             Boolean assignee,
@@ -119,13 +121,16 @@ public class EnqueteServiceImpl implements EnqueteService {
             Integer priorite,
             Boolean urgent,
             Pageable pageable) {
-        return enqueteRepository.readAllEnquete(etatCode, progression, dateDebut, dateFin, assignee, enqueteurId, search, type, priorite, urgent, pageable).map(enqueteAvecDemandeMapper::toDto);
+        return enqueteRepository.readAllEnquete(etatCode, progression, progressionMin, progressionMax, dateDebut, dateFin, assignee, enqueteurId, search, type, priorite, urgent, pageable)
+                .map(enqueteAvecDemandeMapper::toDto);
     }
 
     @Override
     public Page<EnqueteDTO> readAllEnqueteSansDemande(
             String etatCode,
             Integer progression,
+            Integer progressionMin,
+            Integer progressionMax,
             LocalDateTime dateDebut,
             LocalDateTime dateFin,
             Boolean assignee,
@@ -135,7 +140,8 @@ public class EnqueteServiceImpl implements EnqueteService {
             Integer priorite,
             Boolean urgent,
             Pageable pageable) {
-        return enqueteRepository.readAllEnquete(etatCode, progression, dateDebut, dateFin, assignee, enqueteurId, search, type, priorite, urgent, pageable).map(enqueteMapper::toDto);
+        return enqueteRepository.readAllEnquete(etatCode, progression, progressionMin, progressionMax, dateDebut, dateFin, assignee, enqueteurId, search, type, priorite, urgent, pageable)
+                .map(enqueteMapper::toDto);
     }
 
 
@@ -232,7 +238,7 @@ public class EnqueteServiceImpl implements EnqueteService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public EnqueteAllDTO ajouterDocuments(Long enqueteId,  MultipartFile[] fichiers, EnqueteDocumentRequestDTO request) {
+    public EnqueteAllDTO ajouterDocuments(Long enqueteId, MultipartFile[] fichiers, EnqueteDocumentRequestDTO request) {
         Enquete enquete = getEnqueteOrThrow(enqueteId);
 
         // 1. Véfication de l'enquête
@@ -309,7 +315,7 @@ public class EnqueteServiceImpl implements EnqueteService {
     }
 
 
-    private void verifedEnquete(Enquete enquete){
+    private void verifedEnquete(Enquete enquete) {
         // 1. Vérifier si l'enquête est assigné
         if (Objects.isNull(enquete.getEnqueteur())) {
             throw new CustomBadRequestException(
@@ -318,7 +324,7 @@ public class EnqueteServiceImpl implements EnqueteService {
         }
 
         // 2. Vérifier si l'enquête est en cours
-        if(!enquete.getEtat().getCode().equals(ETAT_EN_COURS)){
+        if (!enquete.getEtat().getCode().equals(ETAT_EN_COURS)) {
             throw new CustomBadRequestException(
                     new BadRequestAlertException("L'enquete n'est pas en cours", ENTITY, "enquete_non_encours")
             );
