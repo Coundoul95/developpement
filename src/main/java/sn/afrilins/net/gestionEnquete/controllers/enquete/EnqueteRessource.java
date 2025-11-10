@@ -118,6 +118,10 @@ public class EnqueteRessource {
             @RequestParam(required = false) String etatCode,
             @Parameter(description = "La progression")
             @RequestParam(required = false) Integer progression,
+            @Parameter(description = "Progression minimale (0 à 100)")
+            @RequestParam(required = false) Integer progressionMin,
+            @Parameter(description = "Progression maximale (0 à 100)")
+            @RequestParam(required = false) Integer progressionMax,
             @Parameter(description = "Date de début (format ISO-8601)")
             @RequestParam(required = false) LocalDateTime dateDebut,
             @Parameter(description = "Date de fin (format ISO-8601)")
@@ -138,6 +142,8 @@ public class EnqueteRessource {
         return enqueteService.readAllEnqueteAvecDemande(
                 etatCode,
                 progression,
+                progressionMin,
+                progressionMax,
                 dateDebut,
                 dateFin,
                 assignee,
@@ -168,6 +174,10 @@ public class EnqueteRessource {
             @RequestParam(required = false) String etatCode,
             @Parameter(description = "La progression de l'enquête (0 à 100)")
             @RequestParam(required = false) Integer progression,
+            @Parameter(description = "Progression minimale (0 à 100)")
+            @RequestParam(required = false) Integer progressionMin,
+            @Parameter(description = "Progression maximale (0 à 100)")
+            @RequestParam(required = false) Integer progressionMax,
             @Parameter(description = "Date de début (format ISO-8601)")
             @RequestParam(required = false) LocalDateTime dateDebut,
             @Parameter(description = "Date de fin (format ISO-8601)")
@@ -193,6 +203,8 @@ public class EnqueteRessource {
         return enqueteService.readAllEnqueteSansDemande(
                 etatCode,
                 progression,
+                progressionMin,
+                progressionMax,
                 dateDebut,
                 dateFin,
                 assignee,

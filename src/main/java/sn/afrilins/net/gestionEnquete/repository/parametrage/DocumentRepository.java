@@ -93,32 +93,55 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, Query
         }
 
         // 🔹 Gestion enquêtes
-        if (enqueteId != null) {
-            if (excludeEnquete) {
-                // tous les documents qui ne sont liés à aucune enquête
+//        if (enqueteId != null) {
+//            if (excludeEnquete) {
+//                // tous les documents qui ne sont liés à aucune enquête
+//                builder.and(doc.enquetes.isEmpty());
+//            } else {
+//                // tous les documents liés à cette enquête précise
+//                builder.and(doc.enquetes.any().id.eq(enqueteId));
+//            }
+//        }
+        // 🔹 Gestion Enquêtes
+        if (excludeEnquete) {
+            if (enqueteId != null) {
+                // Exclure les documents liés à CETTE enquête
+                builder.and(doc.enquetes.any().id.eq(enqueteId).not());
+            } else {
+                // Exclure tous les documents ayant une enquête
                 builder.and(doc.enquetes.isEmpty());
-            } else {
-                // tous les documents liés à cette enquête précise
-                builder.and(doc.enquetes.any().id.eq(enqueteId));
             }
+        } else if (enqueteId != null) {
+            // Inclure les documents liés à CETTE enquête
+            builder.and(doc.enquetes.any().id.eq(enqueteId));
         }
 
-        // 🔹 Gestion demandes
-        if (demandeId != null) {
-            if (excludeDemande) {
+        // 🔹 Gestion Demandes
+        if (excludeDemande) {
+            if (demandeId != null) {
+                // Exclure les documents liés à CETTE demande
+                builder.and(doc.demandesEnquete.any().id.eq(demandeId).not());
+            } else {
+                // Exclure tous les documents ayant une demande
                 builder.and(doc.demandesEnquete.isEmpty());
-            } else {
-                builder.and(doc.demandesEnquete.any().id.eq(demandeId));
             }
+        } else if (demandeId != null) {
+            // Inclure les documents liés à CETTE demande
+            builder.and(doc.demandesEnquete.any().id.eq(demandeId));
         }
 
-        // 🔹 Gestion sources
-        if (sourceInfoId != null) {
-            if (excludeSource) {
-                builder.and(doc.sourceInfos.isEmpty());
+        // 🔹 Gestion Sources
+        if (excludeSource) {
+            if (sourceInfoId != null) {
+                // Exclure les documents liés à CETTE source
+                builder.and(doc.sourceInfos.any().id.eq(sourceInfoId).not());
             } else {
-                builder.and(doc.sourceInfos.any().id.eq(sourceInfoId));
+                // Exclure tous les documents ayant une source
+                builder.and(doc.sourceInfos.isEmpty());
             }
+        } else if (sourceInfoId != null) {
+            // Inclure les documents liés à CETTE source
+            builder.and(doc.sourceInfos.any().id.eq(sourceInfoId));
         }
 
         return findAll(builder, pageable);
